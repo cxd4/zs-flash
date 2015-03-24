@@ -54,7 +54,7 @@ typedef unsigned short          u16;
  * `short` could be 32 bits long, but then we would lack 8- or 16-bit types.
  * It's better to avoid using `long` if we know that `int` already works.
  */
-#if (0xFFFF != 65535u)
+#if (0xFFFFFFFFL < 0xFFFFFFFFUL)
 typedef signed long             s32;
 typedef unsigned long           u32;
 #else
