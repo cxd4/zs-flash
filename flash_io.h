@@ -68,13 +68,22 @@ typedef unsigned int            u32;
  * smallest C data type that is greater than or equal to 64 bits
  *
  * If `long` is not at least a 64-bit type, then there probably is no native
- * 64-bit type on the hardware (presuming LP64 ABI implementations of C that
- * make some effort to match types to register sizes), so there is not
- * really a mandatory use for C99 extensions like `long long` or `int64_t`.
+ * LP64 64-bit type on the hardware anyway, so any C99 extension to achieve
+ * it would only be virtual, not direct.  However, the RCP's 64-bit access to
+ * flash RAM does tempt the possibile inclusion of even such a bypass.
  */
-#if (0xFFFFFFFFl == 0xFFFFFFFFul)
+#if (0x00000000FFFFFFFFUL < ~0UL) && defined(__LP64__)
 typedef signed long             s64;
 typedef unsigned long           u64;
+#elif defined(_STDINT_H)
+typedef int64_t                 s64;
+typedef uint64_t                u64;
+#elif defined(MSC_VER_) /* Microsoft's own LLP64 in defense of their WINAPI */
+typedef signed __int64          s64;
+typedef unsigned __int64        u64;
+#else /* fallback to assume C99 support if no physical 64-bit size exists */
+typedef signed long long        s64;
+typedef unsigned long long      u64;
 #endif
 
 /*
@@ -83,6 +92,7 @@ typedef unsigned long           u64;
 typedef char                    i8;
 typedef s16                     i16;
 typedef s32                     i32;
+typedef s64                     i64;
 
 extern unsigned char  read8 (const unsigned char * addr);
 extern unsigned short read16(const unsigned char * addr);

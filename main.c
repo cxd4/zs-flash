@@ -6,6 +6,8 @@ int main(int argc, char ** argv)
 {
     unsigned int word;
 
+    printf("sizeof(i64) = %i\n", sizeof(i64));
+
     flash_RAM[0x000004] = 0xDE;
     flash_RAM[0x000005] = 0xAD;
     flash_RAM[0x000006] = 0xBE;
