@@ -32,6 +32,16 @@ extern unsigned char flash_RAM[FLASH_SIZE];
 #endif
 
 /*
+ * GCC and the various compilers based on it (which also may define this)
+ * have been known to bundle "stdint.h", which does not necessarily break
+ * strict C89 compliance by itself, even though the existence of the header
+ * is guaranteed only by C99 extensions or full support.
+ */
+#if defined(__GNUC__)
+#include <stdint.h>
+#endif
+
+/*
  * smallest C data type that is greater than or equal to 8 bits
  *
  * After the 1989 ISO ratification, only `char` can possibly be 8-bit.
