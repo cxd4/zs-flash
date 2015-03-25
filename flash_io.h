@@ -42,8 +42,10 @@ typedef unsigned char           u8;
 /*
  * smallest C data type that is greater than or equal to 16 bits
  *
- * After the 1989 ISO ratification, only `short` and `int` are possibilities.
- * Now neither can be shorter than 16 bits, but sizeof(int) >= sizeof(short).
+ * After the 1989 ISO ratification, only `short` and `char` are
+ * possibilities.  (Very rarely should `char` be a 16-bit type, though.)
+ * Obviously, `int` is also always greater than or equal to 16 bits,
+ * but sizeof(int) >= sizeof(short), when `short` already had that guarantee.
  */
 typedef signed short            s16;
 typedef unsigned short          u16;
