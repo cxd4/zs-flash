@@ -104,10 +104,10 @@ typedef s16                     i16;
 typedef s32                     i32;
 typedef s64                     i64;
 
-extern unsigned char  read8 (const unsigned char * addr);
-extern unsigned short read16(const unsigned char * addr);
-extern unsigned long  read32(const unsigned char * addr);
-extern void*          read64(const unsigned char * addr);
+extern u8  read8 (const unsigned char * addr);
+extern u16 read16(const unsigned char * addr);
+extern u32 read32(const unsigned char * addr);
+extern u64 read64(const unsigned char * addr);
 
 extern void write8 (unsigned char * dst, const unsigned char * src);
 extern void write16(unsigned char * dst, const unsigned char * src);

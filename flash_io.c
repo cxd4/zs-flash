@@ -3,9 +3,9 @@
 
 unsigned char flash_RAM[FLASH_SIZE];
 
-unsigned char read8(const unsigned char * addr)
+u8 read8(const unsigned char * addr)
 {
-    unsigned char octet;
+    u8 octet;
 
     if (addr < &flash_RAM[FLASH_MIN_ADDR] || addr > &flash_RAM[FLASH_MAX_ADDR])
     {
@@ -16,16 +16,16 @@ unsigned char read8(const unsigned char * addr)
     return (octet);
 }
 
-unsigned short read16(const unsigned char * addr)
+u16 read16(const unsigned char * addr)
 {
-    unsigned short halfword; /* MIPS and from the game's point of view */
+    u16 halfword; /* MIPS and from the game's point of view */
 
     halfword  = read8(addr + 0) << 8;
     halfword |= read8(addr + 1) << 0;
     return (halfword & 0x000000000000FFFFu);
 }
 
-unsigned long read32(const unsigned char * addr)
+u32 read32(const unsigned char * addr)
 {
     u32 word; /* MIPS and from the game's point of view */
 
@@ -34,13 +34,13 @@ unsigned long read32(const unsigned char * addr)
     return (word & 0x00000000FFFFFFFFu);
 }
 
-void * read64(const unsigned char * addr)
+u64 read64(const unsigned char * addr)
 {
-    static u32 doubleword[2];
+    u64 doubleword;
 
-    doubleword[0] = read32(addr + 0);
-    doubleword[1] = read32(addr + 4);
-    return &(doubleword[0]);
+    doubleword  = (u64)read32(addr + 0) << 32;
+    doubleword |= (u64)read32(addr + 4) <<  0;
+    return (doubleword);
 }
 
 void write8(unsigned char * dst, const unsigned char * src)
