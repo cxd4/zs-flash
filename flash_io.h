@@ -80,7 +80,7 @@ typedef unsigned int            u32;
  * If `long` is not at least a 64-bit type, then there probably is no native
  * LP64 64-bit type on the hardware anyway, so any C99 extension to achieve
  * it would only be virtual, not direct.  However, the RCP's 64-bit access to
- * flash RAM does tempt the possibile inclusion of even such a bypass.
+ * flash RAM does tempt the possible inclusion of even such a bypass.
  */
 #if (0x00000000FFFFFFFFUL < ~0UL) && defined(__LP64__)
 typedef signed long             s64;
