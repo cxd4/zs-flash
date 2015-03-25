@@ -43,34 +43,43 @@ u64 read64(const unsigned char * addr)
     return (doubleword);
 }
 
-void write8(unsigned char * dst, const unsigned char * src)
+void write8(unsigned char * dst, const u8 src)
 {
     if (dst < &flash_RAM[FLASH_MIN_ADDR] || dst > &flash_RAM[FLASH_MAX_ADDR])
     {
         my_error(ERR_WR_FLASH_ACCESS_VIOLATION);
         return; /* N64 RCP writes nothing to un-mapped memory. */
     }
-    *(dst) = read8(src);
+    *(dst) = (unsigned char)src; /* maybe sizeof(u8) != sizeof(unsigned char) */
     return;
 }
 
-void write16(unsigned char *  dst, const unsigned char * src)
+void write16(unsigned char * dst, const u16 src)
 {
-    write8(dst + 0, src + 0);
-    write8(dst + 1, src + 1);
-    return; 
-}
+    const u16 src_mask_hi = (src & 0xFF00u) >>  8;
+    const u16 src_mask_lo = (src & 0x00FFu) >>  0;
 
-void write32(unsigned char * dst, const unsigned char * src)
-{
-    write16(dst + 0, src + 0);
-    write16(dst + 2, src + 2);
+    write8(dst + 0, (u8)src_mask_hi);
+    write8(dst + 1, (u8)src_mask_lo);
     return;
 }
 
-void write64(unsigned char * dst, const unsigned char * src)
+void write32(unsigned char * dst, const u32 src)
 {
-    write32(dst + 0, src + 0);
-    write32(dst + 4, src + 4);
+    const u32 src_mask_hi = (src & 0xFFFF0000ul) >> 16;
+    const u32 src_mask_lo = (src & 0x0000FFFFul) >>  0;
+
+    write16(dst + 0, (u16)src_mask_hi);
+    write16(dst + 2, (u16)src_mask_lo);
+    return;
+}
+
+void write64(unsigned char * dst, const u64 src)
+{
+    const u32 src_lo      = (u32)(src & 0x00000000FFFFFFFFul);
+    const u64 src_mask_hi = (src ^ src_lo) >> 32;
+
+    write32(dst + 0, (u32)src_mask_hi);
+    write32(dst + 4, src_lo);
     return;
 }

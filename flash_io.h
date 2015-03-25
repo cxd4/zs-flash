@@ -109,9 +109,9 @@ extern u16 read16(const unsigned char * addr);
 extern u32 read32(const unsigned char * addr);
 extern u64 read64(const unsigned char * addr);
 
-extern void write8 (unsigned char * dst, const unsigned char * src);
-extern void write16(unsigned char * dst, const unsigned char * src);
-extern void write32(unsigned char * dst, const unsigned char * src);
-extern void write64(unsigned char * dst, const unsigned char * src);
+extern void write8 (unsigned char * dst, const u8  src);
+extern void write16(unsigned char * dst, const u16 src);
+extern void write32(unsigned char * dst, const u32 src);
+extern void write64(unsigned char * dst, const u64 src);
 
 #endif

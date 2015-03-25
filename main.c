@@ -6,14 +6,7 @@ int main(int argc, char ** argv)
 {
     unsigned int word;
 
-    printf("sizeof(i64) = %i\n", sizeof(i64));
-
-    flash_RAM[0x000004] = 0xDE;
-    flash_RAM[0x000005] = 0xAD;
-    flash_RAM[0x000006] = 0xBE;
-    flash_RAM[0x000007] = 0xEF;
-
-    write64(&flash_RAM[0x002000], &flash_RAM[0x000000]);
+    write64(&flash_RAM[0x002000], 0x00000000DEADBEEF);
     word = read32(&flash_RAM[0x002004]);
     printf("%08X\n", word);
 
