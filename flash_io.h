@@ -104,11 +104,19 @@ typedef s16                     i16;
 typedef s32                     i32;
 typedef s64                     i64;
 
+/*
+ * reads from flash-native endian to client-native endian
+ * (on x86, from MIPS big-endian to little-endian return slot)
+ */
 extern u8  read8 (const unsigned char * addr);
 extern u16 read16(const unsigned char * addr);
 extern u32 read32(const unsigned char * addr);
 extern u64 read64(const unsigned char * addr);
 
+/*
+ * writes from client-native endian to flash-native endian
+ * (on x86, from little-endian source to MIPS big-endian memory storage)
+ */
 extern void write8 (unsigned char * dst, const u8  src);
 extern void write16(unsigned char * dst, const u16 src);
 extern void write32(unsigned char * dst, const u32 src);
