@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include "flash_io.h"
 #include "errors.h"
 
@@ -82,4 +83,76 @@ void write64(unsigned char * dst, const u64 src)
     write32(dst + 0, (u32)src_mask_hi);
     write32(dst + 4, src_lo);
     return;
+}
+
+long load_flash(const char * filename)
+{
+    FILE * stream;
+    long bytes_read;
+
+    stream = fopen(filename, "rb");
+    if (stream == NULL)
+    {
+        my_error(ERR_FILE_STREAM_NO_LINK);
+        return (bytes_read = 0);
+    }
+
+    for (bytes_read = 0; bytes_read < FLASH_SIZE; bytes_read += BLOCK_SIZE)
+    {
+        u8 block_buf[8];
+        u64 block;
+        size_t elements_read;
+
+        elements_read = fread(&block_buf[0], 8, 1, stream);
+        if (elements_read != 1)
+        {
+            my_error(ERR_DISK_READ_FAILURE);
+            return (bytes_read);
+        }
+
+        block =
+            ((u64)block_buf[0] << 56)
+          | ((u64)block_buf[1] << 48)
+          | ((u64)block_buf[2] << 40)
+          | ((u64)block_buf[3] << 32)
+          | ((u64)block_buf[4] << 24)
+          | ((u64)block_buf[5] << 16)
+          | ((u64)block_buf[6] <<  8)
+          | ((u64)block_buf[7] <<  0)
+        ;
+        write64(&flash_RAM[bytes_read], block);
+    }
+
+    while (fclose(stream) != 0)
+        my_error(ERR_FILE_STREAM_STUCK);
+    return (bytes_read);
+}
+
+long save_flash(const char * filename)
+{
+    FILE * stream;
+    long bytes_sent;
+
+    stream = fopen(filename, "wb");
+    if (stream == NULL)
+    {
+        my_error(ERR_FILE_STREAM_NO_LINK);
+        return (bytes_sent = 0);
+    }
+
+    for (bytes_sent = 0; bytes_sent < FLASH_SIZE; bytes_sent += BLOCK_SIZE)
+    {
+        size_t elements_written;
+
+        elements_written = fwrite(&flash_RAM[bytes_sent], 8, 1, stream);
+        if (elements_written != 1)
+        {
+            my_error(ERR_DISK_WRITE_FAILURE);
+            return (bytes_sent);
+        }
+    }
+
+    while (fclose(stream) != 0)
+        my_error(ERR_FILE_STREAM_STUCK);
+    return (bytes_sent);
 }

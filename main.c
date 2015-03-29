@@ -4,6 +4,7 @@
 
 int main(int argc, char ** argv)
 {
+    long file_size;
     unsigned int word;
 
     write64(&flash_RAM[0x002000], 0x00000000DEADBEEF);
@@ -15,5 +16,10 @@ int main(int argc, char ** argv)
         my_error(ERR_FLASHRAM_LOCATION_UNKNOWN);
         return ERR_FLASHRAM_LOCATION_UNKNOWN;
     }
+
+    file_size = load_flash(argv[1]);
+    printf("load size:  %li\n", file_size);
+    file_size = save_flash(argv[1]);
+    printf("save size:  %li\n", file_size);
     return ERR_NONE;
 }

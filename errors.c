@@ -8,6 +8,13 @@
 static const char errors[ERR_UNKNOWN + 1][32] = {
     "No current error at this time." ,
     "No flash memory location given.",
+
+    "Unable to contact data storage.",
+    "Failed to close data steam."    ,
+
+    "File system flash read failed." ,
+    "File system flash write failed.",
+
     "Flash read access violation."   ,
     "Flash write access violation."  ,
 

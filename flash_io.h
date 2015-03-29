@@ -6,11 +6,16 @@
 #define FILE_MIN_ADDR           0x000000
 #define FILE_MAX_ADDR           0x001FFF
 
-#if ((FLASH_MIN_ADDR) % 8 != 0 || (FLASH_MAX_ADDR) % 8 != 7)
+/*
+ * RCP has only block-access (64-bit intervals) to the flash RAM.
+ */
+#define BLOCK_SIZE              8
+
+#if ((FLASH_MIN_ADDR) % BLOCK_SIZE != 0 || (FLASH_MAX_ADDR) % BLOCK_SIZE != 7)
 #error Unaligned RCP address range for flash memory.
 #endif
 
-#if ((FILE_MIN_ADDR) % 8 != 0 || (FILE_MAX_ADDR) % 8 != 7)
+#if ((FILE_MIN_ADDR) % BLOCK_SIZE != 0 || (FILE_MAX_ADDR) % BLOCK_SIZE != 7)
 #error Unaligned flash memory range for save file segmentation.
 #endif
 
@@ -121,5 +126,12 @@ extern void write8 (unsigned char * dst, const u8  src);
 extern void write16(unsigned char * dst, const u16 src);
 extern void write32(unsigned char * dst, const u32 src);
 extern void write64(unsigned char * dst, const u64 src);
+
+/*
+ * memory management functions for the entire flash RAM
+ * The only portable construct we have for flash I/O is C file system access.
+ */
+extern long load_flash(const char * filename);
+extern long save_flash(const char * filename);
 
 #endif
