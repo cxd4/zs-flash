@@ -1,8 +1,4 @@
-#ifdef _WIN32
-#include <windows.h>
-#else
 #include <stdio.h>
-#endif
 #include "errors.h"
 
 static const char errors[ERR_UNKNOWN + 1][32] = {
@@ -30,12 +26,8 @@ void my_error(const int key)
     else
         code = key;
 
-#ifdef _WIN32
-    MessageBoxA(NULL, errors[code], NULL, MB_ICONERROR);
-#else
     fputs(errors[code], stderr);
     fputc('\n', stderr);
     fgetc(stdin); /* pausing for better notification */
-#endif
     return;
 }
