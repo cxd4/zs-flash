@@ -29,8 +29,8 @@ u16 read16(const void * address)
     u16 halfword; /* MIPS and from the game's point of view */
 
     addr = (const u8 *)address;
-    halfword  = read8(addr + 0) << 8;
-    halfword |= read8(addr + 1) << 0;
+    halfword  = (u16)read8(addr + 0) << 8;
+    halfword |= (u16)read8(addr + 1) << 0;
     return (halfword & 0x000000000000FFFFu);
 }
 
@@ -40,8 +40,8 @@ u32 read32(const void * address)
     u32 word; /* MIPS and from the game's point of view */
 
     addr = (const u8 *)address;
-    word  = read16(addr + 0) << 16;
-    word |= read16(addr + 2) <<  0;
+    word  = (u32)read16(addr + 0) << 16;
+    word |= (u32)read16(addr + 2) <<  0;
     return (word & 0x00000000FFFFFFFFu);
 }
 
@@ -77,10 +77,12 @@ void write16(void * dst, const u16 src)
     u8 * addr;
     const u16 src_mask_hi = (src & 0xFF00u) >>  8;
     const u16 src_mask_lo = (src & 0x00FFu) >>  0;
+    const u8 src_hi = (u8)(src_mask_hi & 0x00FFu);
+    const u8 src_lo = (u8)(src_mask_lo & 0x00FFu);
 
     addr = (u8 *)dst;
-    write8(addr + 0, (u8)src_mask_hi);
-    write8(addr + 1, (u8)src_mask_lo);
+    write8(addr + 0, src_hi);
+    write8(addr + 1, src_lo);
     return;
 }
 
@@ -89,21 +91,25 @@ void write32(void * dst, const u32 src)
     u8 * addr;
     const u32 src_mask_hi = (src & 0xFFFF0000ul) >> 16;
     const u32 src_mask_lo = (src & 0x0000FFFFul) >>  0;
+    const u16 src_hi = (u16)(src_mask_hi & 0x0000FFFFu);
+    const u16 src_lo = (u16)(src_mask_lo & 0x0000FFFFu);
 
     addr = (u8 *)dst;
-    write16(addr + 0, (u16)src_mask_hi);
-    write16(addr + 2, (u16)src_mask_lo);
+    write16(addr + 0, src_hi);
+    write16(addr + 2, src_lo);
     return;
 }
 
 void write64(void * dst, const u64 src)
 {
     u8 * addr;
-    const u32 src_lo      = (u32)(src & 0x00000000FFFFFFFFul);
-    const u64 src_mask_hi = (src ^ src_lo) >> 32;
+    const u64 src_mask_hi = (src & ~0x00000000FFFFFFFFul) >> 32;
+    const u64 src_mask_lo = (src &  0x00000000FFFFFFFFul) >>  0;
+    const u32 src_hi      = (u32)(src_mask_hi & 0x00000000FFFFFFFFul);
+    const u32 src_lo      = (u32)(src_mask_lo & 0x00000000FFFFFFFFul);
 
     addr = (u8 *)dst;
-    write32(addr + 0, (u32)src_mask_hi);
+    write32(addr + 0, src_hi);
     write32(addr + 4, src_lo);
     return;
 }
