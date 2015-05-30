@@ -5,10 +5,12 @@
 int main(int argc, char ** argv)
 {
     long file_size;
-    unsigned int word;
+    u32 word;
 
-    write64(&flash_RAM[0x002000], 0x00000000DEADBEEF);
+    write64(&flash_RAM[0x002000], 0x1337C0DEDEADBEEF);
     word = read32(&flash_RAM[0x002004]);
+    printf("%08X\n", word);
+    word = read32(&flash_RAM[0x002000]);
     printf("%08X\n", word);
 
     if (argc < 2)

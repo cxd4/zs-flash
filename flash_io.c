@@ -103,8 +103,8 @@ void write32(void * dst, const u32 src)
 void write64(void * dst, const u64 src)
 {
     u8 * addr;
-    const u64 src_mask_hi = (src & ~0x00000000FFFFFFFFul) >> 32;
-    const u64 src_mask_lo = (src &  0x00000000FFFFFFFFul) >>  0;
+    const u64 src_mask_lo = (src & 0x00000000FFFFFFFFul) >>  0;
+    const u64 src_mask_hi = (src ^ src_mask_lo         ) >> 32;
     const u32 src_hi      = (u32)(src_mask_hi & 0x00000000FFFFFFFFul);
     const u32 src_lo      = (u32)(src_mask_lo & 0x00000000FFFFFFFFul);
 
