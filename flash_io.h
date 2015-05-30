@@ -133,6 +133,6 @@ extern void write64(void * dst, const u64 src);
  */
 extern long load_flash(const char * filename);
 extern long save_flash(const char * filename);
-extern void swap_flash(void); /* for resolving server-client endian diffs */
+extern unsigned int swap_flash(void);
 
 #endif

@@ -198,7 +198,7 @@ long save_flash(const char * filename)
     return (bytes_sent);
 }
 
-extern void swap_flash(void)
+unsigned int swap_flash(void)
 {
     u64 block;
     u32 words[2];
@@ -245,9 +245,8 @@ extern void swap_flash(void)
             fprintf(stdout, "Detected %s data.", "64-bit byte-swapped");
             break;
         default:
-            mask = 0;
             fprintf(stderr, "Flash formatting damaged or unsupported.");
-            return;
+            return (mask = 0);
         }
     }
 
@@ -310,5 +309,5 @@ extern void swap_flash(void)
         break;
     }
     putchar('\n');
-    return;
+    return (mask);
 }
