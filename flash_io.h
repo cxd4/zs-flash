@@ -113,19 +113,19 @@ typedef s64                     i64;
  * reads from flash-native endian to client-native endian
  * (on x86, from MIPS big-endian to little-endian return slot)
  */
-extern u8  read8 (const unsigned char * addr);
-extern u16 read16(const unsigned char * addr);
-extern u32 read32(const unsigned char * addr);
-extern u64 read64(const unsigned char * addr);
+extern u8  read8 (const void * address);
+extern u16 read16(const void * address);
+extern u32 read32(const void * address);
+extern u64 read64(const void * address);
 
 /*
  * writes from client-native endian to flash-native endian
  * (on x86, from little-endian source to MIPS big-endian memory storage)
  */
-extern void write8 (unsigned char * dst, const u8  src);
-extern void write16(unsigned char * dst, const u16 src);
-extern void write32(unsigned char * dst, const u32 src);
-extern void write64(unsigned char * dst, const u64 src);
+extern void write8 (void * dst, const u8  src);
+extern void write16(void * dst, const u16 src);
+extern void write32(void * dst, const u32 src);
+extern void write64(void * dst, const u64 src);
 
 /*
  * memory management functions for the entire flash RAM
