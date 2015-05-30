@@ -3,7 +3,9 @@
 
 static const char errors[ERR_UNKNOWN + 1][32] = {
     "No current error at this time." ,
+
     "No flash memory location given.",
+    "Corrupt or unknown byte order." ,
 
     "Unable to contact data storage.",
     "Failed to close data steam."    ,

@@ -24,6 +24,11 @@ int main(int argc, char ** argv)
     printf("load size:  %li\n", file_size);
 
     swap_mask = swap_flash(0);
+    if (swap_mask == ~0u)
+    {
+        my_error(ERR_MEMORY_FORMAT_UNKNOWN);
+        return ERR_MEMORY_FORMAT_UNKNOWN;
+    }
 /*
  * Save-editing work goes here.
  * To do:  Give the user a command-line option to override the swap mask.
