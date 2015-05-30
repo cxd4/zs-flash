@@ -223,6 +223,12 @@ unsigned int swap_flash(unsigned int interval)
         if (block != 0 && block != ~0)
             break;
     }
+    if (i >= FLASH_SIZE) /* overflow from searching an empty file */
+    {
+        mask = get_client_swap_mask();
+        fprintf(stdout, "Detected %s data.", "completely blank game");
+        goto swap_memory;
+    }
 
     words[0] = (u32)(block & 0x00000000FFFFFFFFul);
     words[1] = (u32)(block >> 32);
@@ -322,4 +328,45 @@ swap_memory:
     }
     putchar('\n');
     return (mask);
+}
+
+unsigned int get_client_swap_mask(void)
+{
+    u8 result[8 * 2];
+    u32 words[2];
+    u64 block;
+
+    if (sizeof(char) != sizeof(i8))
+        return ~0u; /* not yet implemented:  non-8-bit byte order */
+    if ((unsigned)(u64)&result[0] & 0x7)
+        return ~0u; /* not yet implemented:  unaligned pre-buffer */
+
+    block   = 0x01234567UL;
+    block <<= 32;
+    block  |= 0x89ABCDEFUL;
+    memcpy(&result[0], &block, sizeof(i64));
+    words[0] =
+        ((u32)result[0] << 24)
+      | ((u32)result[1] << 16)
+      | ((u32)result[2] <<  8)
+      | ((u32)result[3] <<  0)
+    ;
+    words[1] =
+        ((u32)result[4] << 24)
+      | ((u32)result[5] << 16)
+      | ((u32)result[6] <<  8)
+      | ((u32)result[7] <<  0)
+    ;
+    switch (words[0])
+    {
+    default:  /* fall through */
+    case 0x01234567:  return 00;
+    case 0x23016745:  return 01;
+    case 0x45670123:  return 02;
+    case 0x67452301:  return 03;
+    case 0x89ABCDEF:  return 04;
+    case 0xAB89EFCD:  return 05;
+    case 0xCDEF89AB:  return 06;
+    case 0xEFCDAB89:  return 07;
+    }
 }

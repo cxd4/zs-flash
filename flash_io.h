@@ -135,4 +135,14 @@ extern long load_flash(const char * filename);
 extern long save_flash(const char * filename);
 extern unsigned int swap_flash(unsigned int interval);
 
+/*
+ * When swap_flash() is called with 0 as the parameter, the memory is swapped
+ * on an automatically detected interval that is based on the current byte
+ * order found in the game data.  However, if there is no game data in the
+ * entire flash memory, then automatic detection cannot occur based on this
+ * condition alone.  We fall back to a new detection, get_client_swap_mask(),
+ * which uses the current hardware's native byte order as the swap mask.
+ */
+extern unsigned int get_client_swap_mask(void);
+
 #endif
