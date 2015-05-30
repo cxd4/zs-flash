@@ -246,7 +246,7 @@ unsigned int swap_flash(void)
             break;
         default:
             fprintf(stderr, "Flash formatting damaged or unsupported.");
-            return (mask = 0);
+            return (mask = ~0u);
         }
     }
 
