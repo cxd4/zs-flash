@@ -1,7 +1,7 @@
 mkdir -p obj
 src="."
 
-FLAGS_C="-masm=intel -O3 -std=c89 -pedantic -ansi -Wall"
+FLAGS_C="-masm=intel -Os -std=c89 -pedantic -ansi -Wall"
 OBJ_LIST="obj/main.o obj/errors.o obj/flash_io.o"
 
 echo Compiling C sources...

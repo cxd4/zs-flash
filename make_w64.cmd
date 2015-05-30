@@ -4,7 +4,7 @@ set MinGW=C:/msys64/mingw64
 set src=%CD%
 set obj=%src%/obj
 
-set FLAGS_C=-masm=intel -O3 -std=c89 -pedantic -ansi -Wall
+set FLAGS_C=-masm=intel -Os -std=c89 -pedantic -ansi -Wall
 set OBJ_LIST=%obj%/main.o %obj%/errors.o %obj%/flash_io.o
 
 if not exist obj (
