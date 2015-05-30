@@ -25,6 +25,13 @@ int main(int argc, char ** argv)
         return ERR_MEMORY_FORMAT_UNKNOWN;
     }
 
+    for (i = 0; i < 16; i++)
+        printf(
+            "Section %i a valid save file?  %s\n",
+            i, magic_number_test(i) ? "no" : "yes"
+        )
+    ;
+
     i = 2; /* The first two arguments can't be part of editing the save data. */
     while (i < argc)
         i += opt_execute(&argv[i]);
