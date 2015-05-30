@@ -21,6 +21,9 @@ int main(int argc, char ** argv)
 
     file_size = load_flash(argv[1]);
     printf("load size:  %li\n", file_size);
+
+    swap_flash();
+
     file_size = save_flash(argv[1]);
     printf("save size:  %li\n", file_size);
     return ERR_NONE;
