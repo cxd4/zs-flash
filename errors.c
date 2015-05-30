@@ -16,6 +16,9 @@ static const char errors[ERR_UNKNOWN + 1][32] = {
     "Flash read access violation."   ,
     "Flash write access violation."  ,
 
+    "Invalid option switch prefix."  ,
+    "Unimplemented option switch."   ,
+
     "Unimplemented error identifier.",
 };
 
