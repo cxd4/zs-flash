@@ -4,7 +4,7 @@
 #include "flash_io.h"
 #include "errors.h"
 
-unsigned char flash_RAM[FLASH_SIZE];
+u8 flash_RAM[FLASH_SIZE];
 
 u8 read8(const void * address)
 {

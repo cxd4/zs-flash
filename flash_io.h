@@ -24,8 +24,6 @@
 
 #define NUMBER_OF_DATA_FILES    ((FLASH_SIZE) / (FILE_SIZE))
 
-extern unsigned char flash_RAM[FLASH_SIZE];
-
 #if defined(LITTLE_ENDIAN_64_FIXED)
 #define ENDIAN_SWAP_BYTE    07
 #elif defined(LITTLE_ENDIAN_32_FIXED)
@@ -108,6 +106,8 @@ typedef char                    i8;
 typedef s16                     i16;
 typedef s32                     i32;
 typedef s64                     i64;
+
+extern u8 flash_RAM[FLASH_SIZE];
 
 /*
  * reads from flash-native endian to client-native endian
