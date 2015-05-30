@@ -198,7 +198,7 @@ long save_flash(const char * filename)
     return (bytes_sent);
 }
 
-unsigned int swap_flash(void)
+unsigned int swap_flash(unsigned int interval)
 {
     u64 block;
     u32 words[2];
@@ -207,12 +207,23 @@ unsigned int swap_flash(void)
     unsigned int mask;
     register size_t i, j;
 
+    if (interval != 0)
+    { /* callee-defined endian swap on a fixed interval */
+        mask = interval - 1; /* e.g. (interval = 4) for a 32-bit swap */
+        goto swap_memory;
+    }
+
+/*
+ * if (interval == 0) then the memory swapping, if any at all, is done based
+ * on automatic detection of the current byte order the flash RAM is in.
+ */
     for (i = 0x0000; i < FLASH_SIZE; i += FILE_SIZE)
     {
         block = read64(&flash_RAM[i + 0x0020]);
         if (block != 0 && block != ~0)
             break;
     }
+
     words[0] = (u32)(block & 0x00000000FFFFFFFFul);
     words[1] = (u32)(block >> 32);
     switch (words[0])
@@ -250,6 +261,7 @@ unsigned int swap_flash(void)
         }
     }
 
+swap_memory:
     switch (mask)
     {
     case 0:

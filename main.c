@@ -5,6 +5,7 @@
 int main(int argc, char ** argv)
 {
     long file_size;
+    unsigned int swap_mask;
     u32 word;
 
     write64(&flash_RAM[0x002000], 0x1337C0DEDEADBEEF);
@@ -22,7 +23,12 @@ int main(int argc, char ** argv)
     file_size = load_flash(argv[1]);
     printf("load size:  %li\n", file_size);
 
-    swap_flash();
+    swap_mask = swap_flash(0);
+/*
+ * Save-editing work goes here.
+ * To do:  Give the user a command-line option to override the swap mask.
+ */
+    swap_flash(swap_mask + 1);
 
     file_size = save_flash(argv[1]);
     printf("save size:  %li\n", file_size);
