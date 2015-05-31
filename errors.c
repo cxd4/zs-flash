@@ -19,6 +19,9 @@ static const char errors[ERR_UNKNOWN + 1][32] = {
     "Invalid option switch prefix."  ,
     "Unimplemented option switch."   ,
 
+    "Value too large for this input.",
+    "Value cannot fit signed range." ,
+
     "Unimplemented error identifier.",
 };
 

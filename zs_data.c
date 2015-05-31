@@ -1,8 +1,34 @@
 #include <memory.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include "errors.h"
 #include "flash_io.h"
 #include "zs_data.h"
+
+/*
+ * Unless the user specifies otherwise on the command line, the save file
+ * address will by default be File 1 in the flash RAM:  0x2000 * 0.
+ */
+u8 * file = &flash_RAM[0 * FILE_SIZE];
+
+int player_mask(int optc, char ** optv)
+{
+    u8 output;
+    unsigned long input;
+
+    if (optc < 2)
+    {
+        output = read8(file + 0x0004);
+        printf("%s:  0x%02X\n", "player_mask", output);
+        return ERR_NONE;
+    }
+    input = strtoul(optv[1], NULL, 16);
+    if (input > 0xFF)
+        return ERR_INTEGER_TOO_LARGE;
+    output = (u8)input;
+    write8(file + 0x0004, output);
+    return ERR_NONE;
+}
 
 int magic_number_test(unsigned int section_ID)
 {
@@ -51,6 +77,7 @@ u16 fix_checksum(unsigned int section_ID)
 
 int opt_execute(char ** optv)
 {
+    int error_signal;
     int optc;
 
     optc = 1;
@@ -69,11 +96,17 @@ int opt_execute(char ** optv)
         ++optc;
     }
 
+    error_signal = ERR_NONE;
     switch (optv[0][1])
     {
+    case 'm':
+        error_signal = player_mask(optc, optv);
+        break;
     default:
         my_error(ERR_OPTION_NOT_IMPLEMENTED);
         break;
     }
+    if (error_signal != ERR_NONE)
+        my_error(error_signal);
     return (optc);
 }
