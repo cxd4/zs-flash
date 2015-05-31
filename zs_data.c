@@ -25,6 +25,17 @@ u16 fix_checksum(unsigned int section_ID)
     section = &flash_RAM[FILE_SIZE * (section_ID & 0xF)];
     checksum = 0x0000;
 
+/*
+ * Storing a save file checksum implies we are writing valid save file data,
+ * so we may as well make sure that the required magic number is set.
+ */
+    write8(section + 0x0024, 'Z');
+    write8(section + 0x0025, 'E');
+    write8(section + 0x0026, 'L');
+    write8(section + 0x0027, 'D');
+    write8(section + 0x0028, 'A');
+    write8(section + 0x0029, '3');
+
     for (i = 0; i < 0x100A; i++) /* USA and EUR ROMs access the sum here. */
         checksum += read8(section + i);
     write16(section + i, checksum);
