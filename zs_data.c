@@ -10,7 +10,7 @@ int magic_number_test(unsigned int section_ID)
     u8 bytes[6];
     register size_t i;
 
-    section = &flash_RAM[0x2000 * (section_ID & 0xF)];
+    section = &flash_RAM[FILE_SIZE * (section_ID & 0xF)];
     for (i = 0; i < sizeof(bytes); i++)
         bytes[i] = read8(section + 0x0024 + i);
     return memcmp(bytes, "ZELDA3", 6);
@@ -22,7 +22,7 @@ u16 fix_checksum(unsigned int section_ID)
     register size_t i;
     register u32 checksum, checksum_JAP;
 
-    section = &flash_RAM[0x2000 * (section_ID & 0xF)];
+    section = &flash_RAM[FILE_SIZE * (section_ID & 0xF)];
     checksum = 0x0000;
 
     for (i = 0; i < 0x100A; i++) /* USA and EUR ROMs access the sum here. */
