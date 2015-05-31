@@ -20,7 +20,7 @@ u16 fix_checksum(unsigned int section_ID)
 {
     u8 * section;
     register size_t i;
-    register u32 checksum, checksum_JAP;
+    register u16 checksum, checksum_JAP;
 
     section = &flash_RAM[FILE_SIZE * (section_ID & 0xF)];
     checksum = 0x0000;
@@ -35,7 +35,7 @@ u16 fix_checksum(unsigned int section_ID)
         checksum_JAP += read8(section + i);
     write16(section + i, checksum_JAP);
 
-    return (u16)(checksum &= 0x0000FFFF); /* Emulate wrap-around on overflow. */
+    return (checksum);
 }
 
 int opt_execute(char ** optv)
