@@ -10,6 +10,16 @@
 extern int magic_number_test(unsigned int section_ID);
 
 /*
+ * Safety checking of flash reads and writes by this game is maintained by
+ * means of a normal, additive 16-bit checksum.  The relevant checksum will
+ * be stored in only one of two places, depending on whether the version of
+ * the ROM supports saving through owl statues or not (non-Japanese ROMs).
+ *
+ * The correct and up-to-date checksum value is returned.
+ */
+extern u16 fix_checksum(unsigned int section_ID);
+
+/*
  * Execute a command-line option for modifying saved data.
  * optv[0] is the switch (e.g., "-x") for what is modified (an op-code).
  *

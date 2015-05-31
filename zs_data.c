@@ -16,6 +16,28 @@ int magic_number_test(unsigned int section_ID)
     return memcmp(bytes, "ZELDA3", 6);
 }
 
+u16 fix_checksum(unsigned int section_ID)
+{
+    u8 * section;
+    register size_t i;
+    register u32 checksum, checksum_JAP;
+
+    section = &flash_RAM[0x2000 * (section_ID & 0xF)];
+    checksum = 0x0000;
+
+    for (i = 0; i < 0x100A; i++) /* USA and EUR ROMs access the sum here. */
+        checksum += read8(section + i);
+    write16(section + i, checksum);
+
+    checksum_JAP = checksum;
+
+    for (     ; i < 0x138E; i++) /* JAP ROMs access the sum here. */
+        checksum_JAP += read8(section + i);
+    write16(section + i, checksum_JAP);
+
+    return (u16)(checksum &= 0x0000FFFF); /* Emulate wrap-around on overflow. */
+}
+
 int opt_execute(char ** optv)
 {
     int optc;
