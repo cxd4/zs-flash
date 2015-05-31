@@ -107,6 +107,15 @@ typedef s16                     i16;
 typedef s32                     i32;
 typedef s64                     i64;
 
+typedef union {
+    u64 block;
+
+    s64 doubleword;
+    u32 words[2];
+    u16 halfwords[4];
+    u8 bytes[8];
+} RCP_block;
+
 extern u8 flash_RAM[FLASH_SIZE];
 
 /*
