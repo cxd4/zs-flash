@@ -6,7 +6,6 @@
 int main(int argc, char ** argv)
 {
     long file_size;
-    unsigned int swap_mask;
     register int i;
 
     if (argc < 2)

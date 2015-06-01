@@ -5,6 +5,8 @@
 #include "flash_io.h"
 #include "zs_data.h"
 
+unsigned int swap_mask;
+
 /*
  * Unless the user specifies otherwise on the command line, the save file
  * address will by default be File 1 in the flash RAM:  0x2000 * 0.
@@ -75,6 +77,21 @@ u16 fix_checksum(unsigned int section_ID)
     return (checksum);
 }
 
+int zs_endian_swap_mask(int optc, char ** optv)
+{
+    unsigned int output;
+    unsigned long input;
+
+    if (optc < 2)
+        return ERR_INTEGER_COUNT_INSUFFICIENT;
+    input = strtoul(optv[1], NULL, 0);
+    if (input > 0x7) /* Only endianness within a 64-bit boundary is relevant. */
+        return ERR_INTEGER_TOO_LARGE;
+    output = (unsigned int)input;
+    swap_mask = output;
+    return ERR_NONE;
+}
+
 int opt_execute(char ** optv)
 {
     int error_signal;
@@ -101,6 +118,10 @@ int opt_execute(char ** optv)
     {
     case 'm':
         error_signal = player_mask(optc, optv);
+        break;
+
+    case '0':
+        error_signal = zs_endian_swap_mask(optc, optv);
         break;
     default:
         my_error(ERR_OPTION_NOT_IMPLEMENTED);

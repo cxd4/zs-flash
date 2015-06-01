@@ -1,6 +1,8 @@
 #ifndef _ZS_DATA_H_
 #define _ZS_DATA_H_
 
+extern unsigned int swap_mask;
+
 /*
  * Set to &flash_RAM[0x0000] for File 1 and &flash_RAM[0x4000] for File 2.
  * It basically is a reference to &flash_RAM[section_ID << 13].
@@ -8,6 +10,8 @@
 extern u8 * file;
 
 extern int player_mask(int optc, char ** optv);
+
+extern int zs_endian_swap_mask(int optc, char ** optv);
 
 /*
  * "ZELDA3" is the magic number.  If it's stored at 0x0024 into the section
