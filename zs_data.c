@@ -92,6 +92,29 @@ int zs_endian_swap_mask(int optc, char ** optv)
     return ERR_NONE;
 }
 
+int zs_file_pointer(int optc, char ** optv)
+{
+    unsigned int output;
+    unsigned long input;
+
+    if (optc < 2)
+        return ERR_INTEGER_COUNT_INSUFFICIENT;
+    input = strtoul(optv[1], NULL, 0);
+    if (input > 0xF) /* Only 16 sections exist. */
+        return ERR_INTEGER_TOO_LARGE;
+
+    output = (file - flash_RAM) / FILE_SIZE;
+    printf(
+        "Fixed file %u checksum to 0x%04X ",
+        output, fix_checksum(output)
+    );
+
+    output = (unsigned int)input;
+    file = &flash_RAM[FILE_SIZE * output];
+    printf("(&flash_RAM[%04X] = %p).\n", FILE_SIZE * output, file);
+    return ERR_NONE;
+}
+
 int opt_execute(char ** optv)
 {
     int error_signal;
@@ -122,6 +145,9 @@ int opt_execute(char ** optv)
 
     case '0':
         error_signal = zs_endian_swap_mask(optc, optv);
+        break;
+    case '1':
+        error_signal = zs_file_pointer(optc, optv);
         break;
     default:
         my_error(ERR_OPTION_NOT_IMPLEMENTED);

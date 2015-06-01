@@ -12,6 +12,7 @@ extern u8 * file;
 extern int player_mask(int optc, char ** optv);
 
 extern int zs_endian_swap_mask(int optc, char ** optv);
+extern int zs_file_pointer(int optc, char ** optv);
 
 /*
  * "ZELDA3" is the magic number.  If it's stored at 0x0024 into the section

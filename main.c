@@ -28,12 +28,11 @@ int main(int argc, char ** argv)
     while (i < argc)
         i += opt_execute(&argv[i]);
 
-    for (i = 0; i < 16; i++)
-        if (magic_number_test(i) == 0)
-            printf(
-                "Saved checksum 0x%04X to section %i.\n",
-                fix_checksum(i), i
-            );
+    i = (file - flash_RAM) / FILE_SIZE;
+    printf(
+        "Saved checksum 0x%04X to section %i.\n",
+        fix_checksum(i), i
+    );
 
 /*
  * To do:  Give the user a command-line option to override the swap mask.
