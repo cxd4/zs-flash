@@ -32,6 +32,25 @@ int player_mask(int optc, char ** optv)
     return ERR_NONE;
 }
 
+int player_character(int optc, char ** optv)
+{
+    u8 output;
+    unsigned long input;
+
+    if (optc < 2)
+    {
+        output = read8(file + 0x0020);
+        printf("%s:  0x%02X\n", "player_character", output);
+        return ERR_NONE;
+    }
+    input = strtoul(optv[1], NULL, 0);
+    if (input > 0xFF)
+        return ERR_INTEGER_TOO_LARGE;
+    output = (u8)input;
+    write8(file + 0x0020, output);
+    return ERR_NONE;
+}
+
 int magic_number_test(unsigned int section_ID)
 {
     const u8 * section;
@@ -141,6 +160,9 @@ int opt_execute(char ** optv)
     {
     case 'm':
         error_signal = player_mask(optc, optv);
+        break;
+    case 'p':
+        error_signal = player_character(optc, optv);
         break;
 
     case '0':

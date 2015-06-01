@@ -10,6 +10,7 @@ extern unsigned int swap_mask;
 extern u8 * file;
 
 extern int player_mask(int optc, char ** optv);
+extern int player_character(int optc, char ** optv);
 
 extern int zs_endian_swap_mask(int optc, char ** optv);
 extern int zs_file_pointer(int optc, char ** optv);
