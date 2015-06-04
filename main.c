@@ -28,7 +28,7 @@ int main(int argc, char ** argv)
     while (i < argc)
         i += opt_execute(&argv[i]);
 
-    i = (file - flash_RAM) / FILE_SIZE;
+    i = (int)(file - flash_RAM) / FILE_SIZE;
     printf(
         "Saved checksum 0x%04X to section %i.\n",
         fix_checksum(i), i

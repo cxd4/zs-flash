@@ -122,7 +122,7 @@ int zs_file_pointer(int optc, char ** optv)
     if (input > 0xF) /* Only 16 sections exist. */
         return ERR_INTEGER_TOO_LARGE;
 
-    output = (file - flash_RAM) / FILE_SIZE;
+    output = (unsigned int)(file - flash_RAM) / FILE_SIZE;
     printf(
         "Fixed file %u checksum to 0x%04X ",
         output, fix_checksum(output)
