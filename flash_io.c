@@ -336,9 +336,6 @@ unsigned int get_client_swap_mask(void)
     RCP_block result;
     u64 block;
 
-    if (sizeof(char) != sizeof(i8))
-        return ~0u; /* not yet implemented:  non-8-bit byte order */
-
     block   = 0x01234567UL;
     block <<= 32;
     block  |= 0x89ABCDEFUL;
