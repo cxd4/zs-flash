@@ -91,7 +91,7 @@ typedef unsigned long           u64;
 #elif defined(_STDINT_H)
 typedef int64_t                 s64;
 typedef uint64_t                u64;
-#elif defined(MSC_VER_) /* Microsoft's own LLP64 in defense of their WINAPI */
+#elif defined(_MSC_VER) /* Microsoft's own LLP64 in defense of their WINAPI */
 typedef signed __int64          s64;
 typedef unsigned __int64        u64;
 #else /* fallback to assume C99 support if no physical 64-bit size exists */
