@@ -217,12 +217,13 @@ unsigned int swap_flash(unsigned int interval)
  * if (interval == 0) then the memory swapping, if any at all, is done based
  * on automatic detection of the current byte order the flash RAM is in.
  */
-    for (i = 0x0000; i < FLASH_SIZE; i += FILE_SIZE)
-    {
+    i = 0x0000;
+    do {
         block = read64(&flash_RAM[i + 0x0020]);
         if (block != 0 && block != ~0)
             break;
-    }
+        i += FILE_SIZE;
+    } while (i < FLASH_SIZE);
     if (i >= FLASH_SIZE) /* overflow from searching an empty file */
     {
         mask = get_client_swap_mask();
