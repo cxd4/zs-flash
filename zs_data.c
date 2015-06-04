@@ -84,13 +84,13 @@ u16 fix_checksum(unsigned int section_ID)
     write8(section + 0x0029, '3');
 
     for (i = 0; i < 0x100A; i++) /* USA and EUR ROMs access the sum here. */
-        checksum += read8(section + i);
+        checksum = checksum + read8(section + i);
     write16(section + i, checksum);
 
     checksum_JAP = checksum;
 
     for (     ; i < 0x138E; i++) /* JAP ROMs access the sum here. */
-        checksum_JAP += read8(section + i);
+        checksum_JAP = checksum_JAP + read8(section + i);
     write16(section + i, checksum_JAP);
 
     return (checksum);
