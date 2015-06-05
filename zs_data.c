@@ -51,6 +51,32 @@ int player_character(int optc, char ** optv)
     return ERR_NONE;
 }
 
+int life_energy_points(int optc, char ** optv)
+{
+    s16 output;
+    signed long input;
+    int Boolean;
+
+    if (optc < 2)
+        return ERR_INTEGER_COUNT_INSUFFICIENT;
+    input = strtol(optv[1], NULL, 0); /* Boolean ? now_life : max_life */
+    Boolean = (input != 0) ? 1 : 0;
+    if (optc < 3)
+    {
+        output = read16(file + (Boolean ? 0x0036 : 0x0034));
+        printf("%s:  %li\n", Boolean ? "now_life" : "max_life", output);
+        return ERR_NONE;
+    }
+    input = strtol(optv[2], NULL, 0);
+    if (input < -32768)
+        return ERR_SIGNED_UNDERFLOW;
+    if (input > +32767)
+        return ERR_SIGNED_OVERFLOW;
+    output = (s16)input;
+    write16(file + (Boolean ? 0x0036 : 0x0034), output);
+    return ERR_NONE;
+}
+
 int magic_number_test(unsigned int section_ID)
 {
     const u8 * section;
@@ -163,6 +189,9 @@ int opt_execute(char ** optv)
         break;
     case 'p':
         error_signal = player_character(optc, optv);
+        break;
+    case 'L':
+        error_signal = life_energy_points(optc, optv);
         break;
 
     case '0':
