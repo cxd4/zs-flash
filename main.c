@@ -6,6 +6,7 @@
 int main(int argc, char ** argv)
 {
     long file_size;
+    unsigned int section_ID;
     register int i;
 
     if (argc < 2)
@@ -28,10 +29,10 @@ int main(int argc, char ** argv)
     while (i < argc)
         i += opt_execute(&argv[i]);
 
-    i = (int)(file - flash_RAM) / FILE_SIZE;
+    section_ID = (unsigned int)(file - flash_RAM) / FILE_SIZE;
     printf(
-        "Saved checksum 0x%04X to section %i.\n",
-        fix_checksum(i), i
+        "Saved checksum 0x%04X to section %u.\n",
+        fix_checksum(section_ID), section_ID
     );
 
 /*

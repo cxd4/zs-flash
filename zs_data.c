@@ -53,7 +53,7 @@ int player_character(int optc, char ** optv)
 
 int life_energy_points(int optc, char ** optv)
 {
-    s16 output;
+    u16 output;
     signed long input;
     int Boolean;
 
@@ -64,7 +64,7 @@ int life_energy_points(int optc, char ** optv)
     if (optc < 3)
     {
         output = read16(file + (Boolean ? 0x0036 : 0x0034));
-        printf("%s:  %li\n", Boolean ? "now_life" : "max_life", output);
+        printf("%s:  0x%04X\n", Boolean ? "now_life" : "max_life", output);
         return ERR_NONE;
     }
     input = strtol(optv[2], NULL, 0);
@@ -72,7 +72,7 @@ int life_energy_points(int optc, char ** optv)
         return ERR_SIGNED_UNDERFLOW;
     if (input > +32767)
         return ERR_SIGNED_OVERFLOW;
-    output = (s16)input;
+    output = (u16)((s16)input);
     write16(file + (Boolean ? 0x0036 : 0x0034), output);
     return ERR_NONE;
 }
