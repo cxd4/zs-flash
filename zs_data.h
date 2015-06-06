@@ -1,6 +1,8 @@
 #ifndef _ZS_DATA_H_
 #define _ZS_DATA_H_
 
+#define BYTES_IN_MAGIC_NUMBER           6
+
 extern unsigned int swap_mask;
 
 /*

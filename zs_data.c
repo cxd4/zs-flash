@@ -7,6 +7,15 @@
 
 unsigned int swap_mask;
 
+static const u8 newf[BYTES_IN_MAGIC_NUMBER] = {
+    0x5A, /* 'Z' */
+    0x45, /* 'E' */
+    0x4C, /* 'L' */
+    0x44, /* 'D' */
+    0x41, /* 'A' */
+    0x33, /* '3' */
+}; /* "ZELDA3" also works but is not bit-exact or as portable. */
+
 /*
  * Unless the user specifies otherwise on the command line, the save file
  * address will by default be File 1 in the flash RAM:  0x2000 * 0.
@@ -80,13 +89,13 @@ int life_energy_points(int optc, char ** optv)
 int magic_number_test(unsigned int section_ID)
 {
     const u8 * section;
-    u8 bytes[6];
+    u8 bytes[BYTES_IN_MAGIC_NUMBER];
     register size_t i;
 
     section = &flash_RAM[FILE_SIZE * (section_ID & 0xF)];
-    for (i = 0; i < sizeof(bytes); i++)
+    for (i = 0; i < BYTES_IN_MAGIC_NUMBER; i++)
         bytes[i] = read8(section + 0x0024 + i);
-    return memcmp(bytes, "ZELDA3", 6);
+    return memcmp(bytes, newf, BYTES_IN_MAGIC_NUMBER * sizeof(u8));
 }
 
 u16 fix_checksum(unsigned int section_ID)
@@ -102,12 +111,8 @@ u16 fix_checksum(unsigned int section_ID)
  * Storing a save file checksum implies we are writing valid save file data,
  * so we may as well make sure that the required magic number is set.
  */
-    write8(section + 0x0024, 'Z');
-    write8(section + 0x0025, 'E');
-    write8(section + 0x0026, 'L');
-    write8(section + 0x0027, 'D');
-    write8(section + 0x0028, 'A');
-    write8(section + 0x0029, '3');
+    for (i = 0; i < BYTES_IN_MAGIC_NUMBER; i++)
+        write8(section + 0x0024 + i, newf[i]);
 
     for (i = 0; i < 0x100A; i++) /* USA and EUR ROMs access the sum here. */
         checksum += read8(section + i);
