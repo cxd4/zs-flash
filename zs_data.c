@@ -86,6 +86,32 @@ int life_energy_points(int optc, char ** optv)
     return ERR_NONE;
 }
 
+int magic_points(int optc, char ** optv)
+{
+    u8 output;
+    signed long input;
+    int Boolean;
+
+    if (optc < 2)
+        return ERR_INTEGER_COUNT_INSUFFICIENT;
+    input = strtol(optv[1], NULL, 0); /* Boolean ? magic_now : magic_max */
+    Boolean = (input != 0) ? 1 : 0;
+    if (optc < 3)
+    {
+        output = read8(file + (Boolean ? 0x0039 : 0x0038));
+        printf("%s:  0x%02X\n", Boolean ? "magic_now" : "magic_max", output);
+        return ERR_NONE;
+    }
+    input = strtol(optv[2], NULL, 0);
+    if (input < -128)
+        return ERR_SIGNED_UNDERFLOW;
+    if (input > +127)
+        return ERR_SIGNED_OVERFLOW;
+    output = (u8)((s8)input);
+    write8(file + (Boolean ? 0x0039 : 0x0038), output);
+    return ERR_NONE;
+}
+
 int magic_number_test(unsigned int section_ID)
 {
     const u8 * section;
@@ -197,6 +223,9 @@ int opt_execute(char ** optv)
         break;
     case 'L':
         error_signal = life_energy_points(optc, optv);
+        break;
+    case 'M':
+        error_signal = magic_points(optc, optv);
         break;
 
     case '0':
