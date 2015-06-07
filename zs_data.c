@@ -1,9 +1,13 @@
 #include <memory.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <limits.h>
+
 #include "errors.h"
 #include "flash_io.h"
 #include "zs_data.h"
+
+p_opt * opt_table;
 
 unsigned int swap_mask;
 
@@ -305,6 +309,14 @@ int sendx16(size_t offset, signed long input)
     return ERR_NONE;
 }
 
+int reserved(int optc, char ** optv)
+{
+    optc = optc; /* unused */
+    return (optv[0][0] == '-') ?
+        ERR_OPTION_NOT_IMPLEMENTED
+      : ERR_OPTION_INVALID;
+}
+
 int opt_execute(char ** optv)
 {
     int error_signal;
@@ -326,51 +338,38 @@ int opt_execute(char ** optv)
         ++optc;
     }
 
-    error_signal = ERR_NONE;
-    switch (optv[0][1])
-    {
-    case 'm':
-        error_signal = player_mask(optc, optv);
-        break;
-    case 'p':
-        error_signal = player_character(optc, optv);
-        break;
-    case 'F':
-        error_signal = bell_flag(optc, optv);
-        break;
-    case 'L':
-        error_signal = life_energy_points(optc, optv);
-        break;
-    case 'M':
-        error_signal = magic_points(optc, optv);
-        break;
-    case 'r':
-        error_signal = lupy_count(optc, optv);
-        break;
-    case 'R':
-        error_signal = long_sword_hp(optc, optv);
-        break;
-    case 'd':
-        error_signal = key_compass_map(optc, optv);
-        break;
-    case 'k':
-        error_signal = key_register(optc, optv);
-        break;
-    case 'f':
-        error_signal = orange_fairy(optc, optv);
-        break;
-
-    case '0':
-        error_signal = zs_endian_swap_mask(optc, optv);
-        break;
-    case '1':
-        error_signal = zs_file_pointer(optc, optv);
-        break;
-    default:
-        my_error(ERR_OPTION_NOT_IMPLEMENTED);
-        break;
-    }
+    error_signal = opt_table[optv[0][1]](optc, optv);
     if (error_signal != ERR_NONE)
         my_error(error_signal);
     return (optc);
+}
+
+void init_options(void)
+{
+    register size_t i;
+    const size_t limit = 1U << CHAR_BIT;
+
+    opt_table = malloc(limit * sizeof(p_opt));
+    for (i = 0; i < limit; i++)
+        opt_table[i] = reserved;
+
+    opt_table['F'] = bell_flag; /* enables/disables Tatl */
+    opt_table['L'] = life_energy_points; /* current H.P. out of max H.P. */
+    opt_table['M'] = magic_points; /* current M.P. out of max M.P. */
+    opt_table['R'] = long_sword_hp; /* Razor Sword durability */
+
+    opt_table['d'] = key_compass_map; /* boss key and dungeon map and compass */
+    opt_table['f'] = orange_fairy; /* stray fairies collected per region */
+    opt_table['k'] = key_register; /* small keys per temple */
+    opt_table['m'] = player_mask; /* currently worn mask */
+    opt_table['p'] = player_character; /* current mask transformation */
+    opt_table['r'] = lupy_count; /* That means "Rupees". */
+
+/*
+ * special-purpose command-line options fundamental to the flash RAM access
+ * Nothing here is pertinent to the game's saved progress data itself.
+ */
+    opt_table['0'] = zs_endian_swap_mask;
+    opt_table['1'] = zs_file_pointer;
+    return;
 }

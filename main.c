@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <stdlib.h>
+
 #include "errors.h"
 #include "flash_io.h"
 #include "zs_data.h"
@@ -26,8 +28,10 @@ int main(int argc, char ** argv)
     }
 
     i = 2; /* The first two arguments can't be part of editing the save data. */
+    init_options();
     while (i < argc)
         i += opt_execute(&argv[i]);
+    free(opt_table);
 
     section_ID = (unsigned int)(file - flash_RAM) / FILE_SIZE;
     printf(

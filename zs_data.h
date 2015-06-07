@@ -3,6 +3,9 @@
 
 #define BYTES_IN_MAGIC_NUMBER           6
 
+typedef int(*p_opt)(int optc, char ** argv);
+extern p_opt * opt_table;
+
 extern unsigned int swap_mask;
 
 /*
@@ -10,6 +13,7 @@ extern unsigned int swap_mask;
  * It basically is a reference to &flash_RAM[section_ID << 13].
  */
 extern u8 * file;
+
 
 extern int player_mask(int optc, char ** optv);
 extern int player_character(int optc, char ** optv);
@@ -22,6 +26,8 @@ extern int key_compass_map(int optc, char ** optv);
 extern int key_register(int optc, char ** optv);
 extern int orange_fairy(int optc, char ** optv);
 
+extern void init_options(void);
+extern int reserved(int optc, char ** optv);
 extern int zs_endian_swap_mask(int optc, char ** optv);
 extern int zs_file_pointer(int optc, char ** optv);
 
