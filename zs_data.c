@@ -24,52 +24,36 @@ u8 * file = &flash_RAM[0 * FILE_SIZE];
 
 int player_mask(int optc, char ** optv)
 {
-    u8 output;
     unsigned long input;
 
     if (optc < 2)
         return show8("player_mask", 0x0004);
     input = strtoul(optv[1], NULL, 16);
-    if (input > 0xFF)
-        return ERR_INTEGER_TOO_LARGE;
-    output = (u8)input;
-    write8(file + 0x0004, output);
-    return ERR_NONE;
+    return send8(0x0004, input);
 }
 
 int player_character(int optc, char ** optv)
 {
-    u8 output;
     unsigned long input;
 
     if (optc < 2)
         return show8("player_character", 0x0020);
     input = strtoul(optv[1], NULL, 0);
-    if (input > 0xFF)
-        return ERR_INTEGER_TOO_LARGE;
-    output = (u8)input;
-    write8(file + 0x0020, output);
-    return ERR_NONE;
+    return send8(0x0020, input);
 }
 
 int bell_flag(int optc, char ** optv)
 {
-    u8 output;
     unsigned long input;
 
     if (optc < 2)
         return show8("bell_flag", 0x0022);
     input = strtoul(optv[1], NULL, 0);
-    if (input > 0xFF)
-        return ERR_INTEGER_TOO_LARGE;
-    output = (u8)input;
-    write8(file + 0x0022, output);
-    return ERR_NONE;
+    return send8(0x0022, input);
 }
 
 int life_energy_points(int optc, char ** optv)
 {
-    u16 output;
     signed long input;
     int Boolean;
 
@@ -80,18 +64,11 @@ int life_energy_points(int optc, char ** optv)
     if (optc < 3)
         return show16(Boolean ? "now_life" : "max_life", 0x0034 + 2*Boolean);
     input = strtol(optv[2], NULL, 0);
-    if (input < -32768)
-        return ERR_SIGNED_UNDERFLOW;
-    if (input > +32767)
-        return ERR_SIGNED_OVERFLOW;
-    output = (u16)((s16)input);
-    write16(file + 0x0034 + 2*Boolean, output);
-    return ERR_NONE;
+    return sendx16(0x0034 + 2*Boolean, input);
 }
 
 int magic_points(int optc, char ** optv)
 {
-    u8 output;
     signed long input;
     int Boolean;
 
@@ -102,52 +79,31 @@ int magic_points(int optc, char ** optv)
     if (optc < 3)
         return show8(Boolean ? "magic_now" : "magix_max", 0x0038 + Boolean);
     input = strtol(optv[2], NULL, 0);
-    if (input < -128)
-        return ERR_SIGNED_UNDERFLOW;
-    if (input > +127)
-        return ERR_SIGNED_OVERFLOW;
-    output = (u8)((s8)input);
-    write8(file + 0x0038 + Boolean, output);
-    return ERR_NONE;
+    return sendx8(0x0038 + Boolean, input);
 }
 
 int lupy_count(int optc, char ** optv)
 {
-    u16 output;
     signed long input;
 
     if (optc < 2)
         return show16("lupy_count", 0x003A);
     input = strtol(optv[1], NULL, 0);
-    if (input < -32768)
-        return ERR_SIGNED_UNDERFLOW;
-    if (input > +32767)
-        return ERR_SIGNED_OVERFLOW;
-    output = (u16)((s16)input);
-    write16(file + 0x003A, output);
-    return ERR_NONE;
+    return sendx16(0x003A, input);
 }
 
 int long_sword_hp(int optc, char ** optv)
 {
-    u16 output;
     signed long input;
 
     if (optc < 2)
         return show16("long_sword_hp", 0x003C);
     input = strtol(optv[1], NULL, 0);
-    if (input < -32768)
-        return ERR_SIGNED_UNDERFLOW;
-    if (input > +32767)
-        return ERR_SIGNED_OVERFLOW;
-    output = (u16)((s16)input);
-    write16(file + 0x003C, output);
-    return ERR_NONE;
+    return sendx16(0x003C, input);
 }
 
 int key_compass_map(int optc, char ** optv)
 {
-    u8 output;
     unsigned long input;
     unsigned int offset;
 
@@ -161,16 +117,11 @@ int key_compass_map(int optc, char ** optv)
     if (optc < 3)
         return show8("key_compass_map", 0x00C0 + offset);
     input = strtoul(optv[2], NULL, 0);
-    if (input > 0xFF)
-        return ERR_INTEGER_TOO_LARGE;
-    output = (u8)input;
-    write8(file + 0x00C0 + offset, output);
-    return ERR_NONE;
+    return send8(0x00C0 + offset, input);
 }
 
 int key_register(int optc, char ** optv)
 {
-    u8 output;
     unsigned long input;
     unsigned int offset;
 
@@ -184,16 +135,11 @@ int key_register(int optc, char ** optv)
     if (optc < 3)
         return show8("key_register", 0x00CA + offset);
     input = strtoul(optv[2], NULL, 0);
-    if (input > 0xFF)
-        return ERR_INTEGER_TOO_LARGE;
-    output = (u8)input;
-    write8(file + 0x00CA + offset, output);
-    return ERR_NONE;
+    return send8(0x00CA + offset, input);
 }
 
 int orange_fairy(int optc, char ** optv)
 {
-    u8 output;
     unsigned long input;
     unsigned int offset;
 
@@ -207,11 +153,7 @@ int orange_fairy(int optc, char ** optv)
     if (optc < 3)
         return show8("orange_fairy", 0x00D4 + offset);
     input = strtoul(optv[2], NULL, 0);
-    if (input > 0xFF)
-        return ERR_INTEGER_TOO_LARGE;
-    output = (u8)input;
-    write8(file + 0x00D4 + offset, output);
-    return ERR_NONE;
+    return send8(0x00D4 + offset, input);
 }
 
 int magic_number_test(unsigned int section_ID)
@@ -315,6 +257,51 @@ int show32(const char * name, size_t offset)
 
     output = read32(file + offset);
     printf("%s:  0x%08X\n", name, output);
+    return ERR_NONE;
+}
+
+int send8(size_t offset, unsigned long input)
+{
+    u8 output;
+
+    if (input > 0x000000FFul)
+        return ERR_INTEGER_TOO_LARGE;
+    output = (u8)input;
+    write8(file + offset, output);
+    return ERR_NONE;
+}
+int send16(size_t offset, unsigned long input)
+{
+    u16 output;
+
+    if (input > 0x0000FFFFul)
+        return ERR_INTEGER_TOO_LARGE;
+    output = (u16)input;
+    write16(file + offset, output);
+    return ERR_NONE;
+}
+int sendx8(size_t offset, signed long input)
+{
+    u8 output;
+
+    if (input < -128)
+        return ERR_SIGNED_UNDERFLOW;
+    if (input > +127)
+        return ERR_SIGNED_OVERFLOW;
+    output = (u8)((s8)input);
+    write8(file + offset, output);
+    return ERR_NONE;
+}
+int sendx16(size_t offset, signed long input)
+{
+    u16 output;
+
+    if (input < -32768)
+        return ERR_SIGNED_UNDERFLOW;
+    if (input > +32767)
+        return ERR_SIGNED_OVERFLOW;
+    output = (u16)((s16)input);
+    write16(file + offset, output);
     return ERR_NONE;
 }
 
