@@ -18,6 +18,7 @@ extern int magic_points(int optc, char ** optv); /* magic_max, magic_now */
 extern int lupy_count(int optc, char ** optv);
 extern int long_sword_hp(int optc, char ** optv);
 extern int key_compass_map(int optc, char ** optv);
+extern int key_register(int optc, char ** optv);
 
 extern int zs_endian_swap_mask(int optc, char ** optv);
 extern int zs_file_pointer(int optc, char ** optv);

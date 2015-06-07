@@ -153,6 +153,29 @@ int key_compass_map(int optc, char ** optv)
     return ERR_NONE;
 }
 
+int key_register(int optc, char ** optv)
+{
+    u8 output;
+    unsigned long input;
+    unsigned int offset;
+
+    if (optc < 2)
+        return ERR_INTEGER_COUNT_INSUFFICIENT;
+    input = strtoul(optv[1], NULL, 0);
+    if (input > 9) /* 0x00CA:0x00D3 */
+        return ERR_INTEGER_TOO_LARGE;
+
+    offset = (unsigned int)input;
+    if (optc < 3)
+        return show8("key_register", 0x00CA + offset);
+    input = strtoul(optv[2], NULL, 0);
+    if (input > 0xFF)
+        return ERR_INTEGER_TOO_LARGE;
+    output = (u8)input;
+    write8(file + 0x00CA + offset, output);
+    return ERR_NONE;
+}
+
 int magic_number_test(unsigned int section_ID)
 {
     const u8 * section;
@@ -301,6 +324,9 @@ int opt_execute(char ** optv)
         break;
     case 'd':
         error_signal = key_compass_map(optc, optv);
+        break;
+    case 'k':
+        error_signal = key_register(optc, optv);
         break;
 
     case '0':
