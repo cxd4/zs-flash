@@ -52,6 +52,21 @@ int player_character(int optc, char ** optv)
     return ERR_NONE;
 }
 
+int bell_flag(int optc, char ** optv)
+{
+    u8 output;
+    unsigned long input;
+
+    if (optc < 2)
+        return show8("bell_flag", 0x0022);
+    input = strtoul(optv[1], NULL, 0);
+    if (input > 0xFF)
+        return ERR_INTEGER_TOO_LARGE;
+    output = (u8)input;
+    write8(file + 0x0022, output);
+    return ERR_NONE;
+}
+
 int life_energy_points(int optc, char ** optv)
 {
     u16 output;
@@ -332,6 +347,9 @@ int opt_execute(char ** optv)
         break;
     case 'p':
         error_signal = player_character(optc, optv);
+        break;
+    case 'F':
+        error_signal = bell_flag(optc, optv);
         break;
     case 'L':
         error_signal = life_energy_points(optc, optv);
