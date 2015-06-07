@@ -15,6 +15,7 @@ extern int player_mask(int optc, char ** optv);
 extern int player_character(int optc, char ** optv);
 extern int life_energy_points(int optc, char ** optv); /* max_life, now_life */
 extern int magic_points(int optc, char ** optv); /* magic_max, magic_now */
+extern int lupy_count(int optc, char ** optv);
 
 extern int zs_endian_swap_mask(int optc, char ** optv);
 extern int zs_file_pointer(int optc, char ** optv);

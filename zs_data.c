@@ -96,6 +96,23 @@ int magic_points(int optc, char ** optv)
     return ERR_NONE;
 }
 
+int lupy_count(int optc, char ** optv)
+{
+    u16 output;
+    signed long input;
+
+    if (optc < 2)
+        return show16("lupy_count", 0x003A);
+    input = strtol(optv[1], NULL, 0);
+    if (input < -32768)
+        return ERR_SIGNED_UNDERFLOW;
+    if (input > +32767)
+        return ERR_SIGNED_OVERFLOW;
+    output = (u16)((s16)input);
+    write16(file + 0x003A, output);
+    return ERR_NONE;
+}
+
 int magic_number_test(unsigned int section_ID)
 {
     const u8 * section;
@@ -235,6 +252,9 @@ int opt_execute(char ** optv)
         break;
     case 'M':
         error_signal = magic_points(optc, optv);
+        break;
+    case 'r':
+        error_signal = lupy_count(optc, optv);
         break;
 
     case '0':
