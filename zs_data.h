@@ -37,6 +37,10 @@ extern int magic_number_test(unsigned int section_ID);
  */
 extern u16 fix_checksum(unsigned int section_ID);
 
+extern int show8 (const char * name, size_t offset);
+extern int show16(const char * name, size_t offset);
+extern int show32(const char * name, size_t offset);
+
 /*
  * Execute a command-line option for modifying saved data.
  * optv[0] is the switch (e.g., "-x") for what is modified (an op-code).

@@ -28,11 +28,7 @@ int player_mask(int optc, char ** optv)
     unsigned long input;
 
     if (optc < 2)
-    {
-        output = read8(file + 0x0004);
-        printf("%s:  0x%02X\n", "player_mask", output);
-        return ERR_NONE;
-    }
+        return show8("player_mask", 0x0004);
     input = strtoul(optv[1], NULL, 16);
     if (input > 0xFF)
         return ERR_INTEGER_TOO_LARGE;
@@ -47,11 +43,7 @@ int player_character(int optc, char ** optv)
     unsigned long input;
 
     if (optc < 2)
-    {
-        output = read8(file + 0x0020);
-        printf("%s:  0x%02X\n", "player_character", output);
-        return ERR_NONE;
-    }
+        return show8("player_character", 0x0020);
     input = strtoul(optv[1], NULL, 0);
     if (input > 0xFF)
         return ERR_INTEGER_TOO_LARGE;
@@ -71,18 +63,14 @@ int life_energy_points(int optc, char ** optv)
     input = strtol(optv[1], NULL, 0); /* Boolean ? now_life : max_life */
     Boolean = (input != 0) ? 1 : 0;
     if (optc < 3)
-    {
-        output = read16(file + (Boolean ? 0x0036 : 0x0034));
-        printf("%s:  0x%04X\n", Boolean ? "now_life" : "max_life", output);
-        return ERR_NONE;
-    }
+        return show16(Boolean ? "now_life" : "max_life", 0x0034 + 2*Boolean);
     input = strtol(optv[2], NULL, 0);
     if (input < -32768)
         return ERR_SIGNED_UNDERFLOW;
     if (input > +32767)
         return ERR_SIGNED_OVERFLOW;
     output = (u16)((s16)input);
-    write16(file + (Boolean ? 0x0036 : 0x0034), output);
+    write16(file + 0x0034 + 2*Boolean, output);
     return ERR_NONE;
 }
 
@@ -97,18 +85,14 @@ int magic_points(int optc, char ** optv)
     input = strtol(optv[1], NULL, 0); /* Boolean ? magic_now : magic_max */
     Boolean = (input != 0) ? 1 : 0;
     if (optc < 3)
-    {
-        output = read8(file + (Boolean ? 0x0039 : 0x0038));
-        printf("%s:  0x%02X\n", Boolean ? "magic_now" : "magic_max", output);
-        return ERR_NONE;
-    }
+        return show8(Boolean ? "magic_now" : "magix_max", 0x0038 + Boolean);
     input = strtol(optv[2], NULL, 0);
     if (input < -128)
         return ERR_SIGNED_UNDERFLOW;
     if (input > +127)
         return ERR_SIGNED_OVERFLOW;
     output = (u8)((s8)input);
-    write8(file + (Boolean ? 0x0039 : 0x0038), output);
+    write8(file + 0x0038 + Boolean, output);
     return ERR_NONE;
 }
 
@@ -188,6 +172,31 @@ int zs_file_pointer(int optc, char ** optv)
     output = (unsigned int)input;
     file = &flash_RAM[FILE_SIZE * output];
     printf("(&flash_RAM[%04X] = %p).\n", FILE_SIZE * output, file);
+    return ERR_NONE;
+}
+
+int show8(const char * name, size_t offset)
+{
+    u8 output;
+
+    output = read8(file + offset);
+    printf("%s:  0x%02X\n", name, output);
+    return ERR_NONE;
+}
+int show16(const char * name, size_t offset)
+{
+    u16 output;
+
+    output = read16(file + offset);
+    printf("%s:  0x%04X\n", name, output);
+    return ERR_NONE;
+}
+int show32(const char * name, size_t offset)
+{
+    u32 output;
+
+    output = read32(file + offset);
+    printf("%s:  0x%08X\n", name, output);
     return ERR_NONE;
 }
 
