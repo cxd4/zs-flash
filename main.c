@@ -35,9 +35,6 @@ int main(int argc, char ** argv)
         fix_checksum(section_ID), section_ID
     );
 
-/*
- * To do:  Give the user a command-line option to override the swap mask.
- */
     swap_flash(swap_mask + 1);
     file_size = save_flash(argv[1]);
     printf("save size:  %li\n", file_size);
