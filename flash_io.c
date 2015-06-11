@@ -42,7 +42,7 @@ u32 read32(const void * address)
     addr = (const u8 *)address;
     word  = (u32)read16(addr + 0) << 16;
     word |= (u32)read16(addr + 2) <<  0;
-    return (word & 0x00000000FFFFFFFFu);
+    return (word & 0x00000000FFFFFFFFul);
 }
 
 u64 read64(const void * address)
