@@ -120,7 +120,7 @@ int key_compass_map(int optc, char ** optv)
     offset = (unsigned int)input;
     if (optc < 3)
         return show8("key_compass_map", 0x00C0 + offset);
-    input = strtoul(optv[2], NULL, 0);
+    input = strtoul(optv[2], NULL, 2);
     return send8(0x00C0 + offset, input);
 }
 
