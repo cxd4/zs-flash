@@ -32,7 +32,7 @@ int player_mask(int optc, char ** optv)
 
     if (optc < 2)
         return show8("player_mask", 0x0004);
-    input = strtoul(optv[1], NULL, 16);
+    input = strtoul(optv[1], NULL, 0);
     return send8(0x0004, input);
 }
 
