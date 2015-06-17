@@ -1,6 +1,8 @@
 #include <memory.h>
 #include <stdio.h>
 #include <stdlib.h>
+
+#include <errno.h>
 #include <limits.h>
 
 #include "errors.h"
@@ -284,6 +286,23 @@ int send16(size_t offset, unsigned long input)
     write16(file + offset, output);
     return ERR_NONE;
 }
+int send32(size_t offset, unsigned long input)
+{
+    u32 output;
+
+#if (ULONG_MAX < 0xFFFFFFFFUL)
+#error Non-ISO-conformant `unsigned long` type.
+#elif (ULONG_MAX == 0xFFFFFFFFUL)
+    if (errno == ERANGE) /* range overflow during strtoul conversion to ULONG */
+#else
+    if (input > 0xFFFFFFFFul) /* Having a 64-bit `long` is always nice. */
+#endif
+        return ERR_INTEGER_TOO_LARGE;
+    output = (u32)input;
+    write32(file + offset, output);
+    return ERR_NONE;
+}
+
 int sendx8(size_t offset, signed long input)
 {
     u8 output;
@@ -306,6 +325,27 @@ int sendx16(size_t offset, signed long input)
         return ERR_SIGNED_OVERFLOW;
     output = (u16)((s16)input);
     write16(file + offset, output);
+    return ERR_NONE;
+}
+int sendx32(size_t offset, signed long input)
+{
+    u32 output;
+
+#if (LONG_MIN < -2147483648) && (LONG_MAX > +2147483647)
+    if (input < -2147483648)
+        return ERR_SIGNED_UNDERFLOW;
+    if (input > +2147483647)
+        return ERR_SIGNED_OVERFLOW;
+#elif (LONG_MIN == -2147483648) && (LONG_MAX == +2147483647)
+    if (input == LONG_MIN && errno == ERANGE)
+        return ERR_SIGNED_UNDERFLOW;
+    if (input == LONG_MAX && errno == ERANGE)
+        return ERR_SIGNED_OVERFLOW;
+#else
+#error Non-ISO-conformant `long` type.
+#endif
+    output = (u32)((s32)input);
+    write32(file + offset, output);
     return ERR_NONE;
 }
 

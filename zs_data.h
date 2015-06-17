@@ -55,8 +55,11 @@ extern int show32(const char * name, size_t offset);
 
 extern int send8 (size_t offset, unsigned long input); /* zero-extended */
 extern int send16(size_t offset, unsigned long input);
+extern int send32(size_t offset, unsigned long input);
+
 extern int sendx8 (size_t offset, signed long input); /* sign-extended */
 extern int sendx16(size_t offset, signed long input);
+extern int sendx32(size_t offset, signed long input);
 
 /*
  * Execute a command-line option for modifying saved data.
