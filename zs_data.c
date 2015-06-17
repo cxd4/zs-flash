@@ -108,6 +108,16 @@ int long_sword_hp(int optc, char ** optv)
     return sendx16(0x003C, input);
 }
 
+int collect_register(int optc, char ** optv)
+{
+    unsigned long input;
+
+    if (optc < 2)
+        return show32("collect_register", 0x00BC);
+    input = strtoul(optv[1], NULL, 2);
+    return send32(0x00BC, input);
+}
+
 int key_compass_map(int optc, char ** optv)
 {
     unsigned long input;
@@ -403,6 +413,7 @@ void init_options(void)
     opt_table['k'] = key_register; /* small keys per temple */
     opt_table['m'] = player_mask; /* currently worn mask */
     opt_table['p'] = player_character; /* current mask transformation */
+    opt_table['q'] = collect_register; /* Quest Status sub-screen data */
     opt_table['r'] = lupy_count; /* That means "Rupees". */
 
 /*

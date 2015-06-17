@@ -22,6 +22,7 @@ extern int life_energy_points(int optc, char ** optv); /* max_life, now_life */
 extern int magic_points(int optc, char ** optv); /* magic_max, magic_now */
 extern int lupy_count(int optc, char ** optv);
 extern int long_sword_hp(int optc, char ** optv);
+extern int collect_register(int optc, char ** optv);
 extern int key_compass_map(int optc, char ** optv);
 extern int key_register(int optc, char ** optv);
 extern int orange_fairy(int optc, char ** optv);
