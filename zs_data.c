@@ -38,6 +38,16 @@ int player_mask(int optc, char ** optv)
     return send8(0x0004, input);
 }
 
+int zelda_time(int optc, char ** optv)
+{
+    unsigned long input;
+
+    if (optc < 2)
+        return show16("zelda_time", 0x000C);
+    input = strtol(optv[1], NULL, 0);
+    return send16(0x000C, input);
+}
+
 int change_zelda_time(int optc, char ** optv)
 {
     signed long input;
@@ -46,10 +56,10 @@ int change_zelda_time(int optc, char ** optv)
     if (optc < 2)
         return show32("change_zelda_time", 0x0014);
     input = strtol(optv[1], NULL, 0);
-    sign_extension_failed = send32(0x0014, input);
+    sign_extension_failed = sendx32(0x0014, input);
     if (sign_extension_failed) /* really 16-bit data, but signed to 32-bit */
         return sign_extension_failed;
-    return send16(0x0016, input);
+    return sendx16(0x0016, input);
 }
 
 int player_character(int optc, char ** optv)
@@ -430,6 +440,7 @@ void init_options(void)
     opt_table['p'] = player_character; /* current mask transformation */
     opt_table['q'] = collect_register; /* Quest Status sub-screen data */
     opt_table['r'] = lupy_count; /* That means "Rupees". */
+    opt_table['z'] = zelda_time; /* daily time:  0x0000 midnight, 0x8000 noon */
 
 /*
  * special-purpose command-line options fundamental to the flash RAM access
