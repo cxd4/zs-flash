@@ -62,6 +62,16 @@ int change_zelda_time(int optc, char ** optv)
     return sendx16(0x0016, input);
 }
 
+int totalday(int optc, char ** optv)
+{
+    signed long input;
+
+    if (optc < 2)
+        return show32("totalday", 0x0018);
+    input = strtol(optv[1], NULL, 0);
+    return sendx32(0x0018, input);
+}
+
 int player_character(int optc, char ** optv)
 {
     unsigned long input;
@@ -427,6 +437,7 @@ void init_options(void)
     for (i = 0; i < limit; i++)
         opt_table[i] = reserved;
 
+    opt_table['D'] = totalday; /* current day number, preferably from 1 to 4 */
     opt_table['F'] = bell_flag; /* enables/disables Tatl */
     opt_table['L'] = life_energy_points; /* current H.P. out of max H.P. */
     opt_table['M'] = magic_points; /* current M.P. out of max M.P. */
