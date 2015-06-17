@@ -38,6 +38,20 @@ int player_mask(int optc, char ** optv)
     return send8(0x0004, input);
 }
 
+int change_zelda_time(int optc, char ** optv)
+{
+    signed long input;
+    int sign_extension_failed;
+
+    if (optc < 2)
+        return show32("change_zelda_time", 0x0014);
+    input = strtol(optv[1], NULL, 0);
+    sign_extension_failed = send32(0x0014, input);
+    if (sign_extension_failed) /* really 16-bit data, but signed to 32-bit */
+        return sign_extension_failed;
+    return send16(0x0016, input);
+}
+
 int player_character(int optc, char ** optv)
 {
     unsigned long input;
@@ -407,6 +421,7 @@ void init_options(void)
     opt_table['L'] = life_energy_points; /* current H.P. out of max H.P. */
     opt_table['M'] = magic_points; /* current M.P. out of max M.P. */
     opt_table['R'] = long_sword_hp; /* Razor Sword durability */
+    opt_table['Z'] = change_zelda_time; /* (time_rate + 3) time acceleration */
 
     opt_table['d'] = key_compass_map; /* boss key and dungeon map and compass */
     opt_table['f'] = orange_fairy; /* stray fairies collected per region */
