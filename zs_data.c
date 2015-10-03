@@ -460,7 +460,7 @@ void init_options(void)
     register size_t i;
     const size_t limit = 1U << CHAR_BIT;
 
-    opt_table = malloc(limit * sizeof(p_opt));
+    opt_table = (p_opt *)malloc(limit * sizeof(p_opt));
     for (i = 0; i < limit; i++)
         opt_table[i] = reserved;
 
