@@ -8,7 +8,7 @@ static const char errors[ERR_UNKNOWN + 1][32] = {
     "Corrupt or unknown byte order." ,
 
     "Unable to contact data storage.",
-    "Failed to close data steam."    ,
+    "Failed to close data stream."   ,
 
     "File system flash read failed." ,
     "File system flash write failed.",
