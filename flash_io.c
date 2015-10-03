@@ -171,21 +171,9 @@ long save_flash(const char * filename)
 
     for (bytes_sent = 0; bytes_sent < FLASH_SIZE; bytes_sent += BLOCK_SIZE)
     {
-        u8 block_buf[8];
-        u64 block;
         size_t elements_written;
 
-        block = read64(&flash_RAM[bytes_sent]);
-        block_buf[0] = (u8)((block >> 56) & 0xFF);
-        block_buf[1] = (u8)((block >> 48) & 0xFF);
-        block_buf[2] = (u8)((block >> 40) & 0xFF);
-        block_buf[3] = (u8)((block >> 32) & 0xFF);
-        block_buf[4] = (u8)((block >> 24) & 0xFF);
-        block_buf[5] = (u8)((block >> 16) & 0xFF);
-        block_buf[6] = (u8)((block >>  8) & 0xFF);
-        block_buf[7] = (u8)((block >>  0) & 0xFF);
-
-        elements_written = fwrite(&block_buf[0], 8, 1, stream);
+        elements_written = fwrite(&flash_RAM[bytes_sent], 8, 1, stream);
         if (elements_written != 1)
         {
             my_error(ERR_DISK_WRITE_FAILURE);
