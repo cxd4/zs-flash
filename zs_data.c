@@ -31,131 +31,149 @@ u8 * file = &flash_RAM[0 * FILE_SIZE];
 int player_mask(int optc, char ** optv)
 {
     unsigned long input;
+    const size_t file_offset = 0x000004;
 
     if (optc < 2)
-        return show8("player_mask", 0x0004);
+        return show8("player_mask", file_offset);
     input = strtoul(optv[1], NULL, 0);
-    return send8(0x0004, input);
+    return send8(file_offset, input);
 }
 
 int zelda_time(int optc, char ** optv)
 {
     unsigned long input;
+    const size_t file_offset = 0x00000C;
 
     if (optc < 2)
-        return show16("zelda_time", 0x000C);
+        return show16("zelda_time", file_offset);
     input = strtoul(optv[1], NULL, 0);
-    return send16(0x000C, input);
+    return send16(file_offset, input);
 }
 
 int change_zelda_time(int optc, char ** optv)
 {
     signed long input;
     int sign_extension_failed;
+    const size_t file_offset = 0x000014;
 
     if (optc < 2)
-        return show32("change_zelda_time", 0x0014);
+        return show32("change_zelda_time", file_offset);
     input = strtol(optv[1], NULL, 0);
-    sign_extension_failed = sendx32(0x0014, input);
+    sign_extension_failed = sendx32(file_offset, input);
     if (sign_extension_failed) /* really 16-bit data, but signed to 32-bit */
-        return sign_extension_failed;
-    return sendx16(0x0016, input);
+        return (sign_extension_failed);
+    return sendx16(file_offset + 2, input);
 }
 
 int totalday(int optc, char ** optv)
 {
     signed long input;
+    const size_t file_offset = 0x000018;
 
     if (optc < 2)
-        return show32("totalday", 0x0018);
+        return show32("totalday", file_offset);
     input = strtol(optv[1], NULL, 0);
-    return sendx32(0x0018, input);
+    return sendx32(file_offset, input);
 }
 
 int player_character(int optc, char ** optv)
 {
     unsigned long input;
+    const size_t file_offset = 0x000020;
 
     if (optc < 2)
-        return show8("player_character", 0x0020);
+        return show8("player_character", file_offset);
     input = strtoul(optv[1], NULL, 0);
-    return send8(0x0020, input);
+    return send8(file_offset, input);
 }
 
 int bell_flag(int optc, char ** optv)
 {
     unsigned long input;
+    const size_t file_offset = 0x000022;
 
     if (optc < 2)
-        return show8("bell_flag", 0x0022);
+        return show8("bell_flag", file_offset);
     input = strtoul(optv[1], NULL, 0);
-    return send8(0x0022, input);
+    return send8(file_offset, input);
 }
 
 int life_energy_points(int optc, char ** optv)
 {
     signed long input;
     int Boolean;
+    const size_t file_offset = 0x000034;
 
     if (optc < 2)
         return ERR_INTEGER_COUNT_INSUFFICIENT;
     input = strtol(optv[1], NULL, 0); /* Boolean ? now_life : max_life */
     Boolean = (input != 0) ? 1 : 0;
     if (optc < 3)
-        return show16(Boolean ? "now_life" : "max_life", 0x0034 + 2*Boolean);
+        return show16(
+            Boolean ? "now_life" : "max_life",
+            file_offset + 2*Boolean
+        );
     input = strtol(optv[2], NULL, 0);
-    return sendx16(0x0034 + 2*Boolean, input);
+    return sendx16(file_offset + 2*Boolean, input);
 }
 
 int magic_points(int optc, char ** optv)
 {
     signed long input;
     int Boolean;
+    const size_t file_offset = 0x000038;
 
     if (optc < 2)
         return ERR_INTEGER_COUNT_INSUFFICIENT;
     input = strtol(optv[1], NULL, 0); /* Boolean ? magic_now : magic_max */
     Boolean = (input != 0) ? 1 : 0;
     if (optc < 3)
-        return show8(Boolean ? "magic_now" : "magix_max", 0x0038 + Boolean);
+        return show8(
+            Boolean ? "magic_now" : "magix_max",
+            file_offset + Boolean
+        );
     input = strtol(optv[2], NULL, 0);
-    return sendx8(0x0038 + Boolean, input);
+    return sendx8(file_offset + Boolean, input);
 }
 
 int lupy_count(int optc, char ** optv)
 {
     signed long input;
+    const size_t file_offset = 0x00003A;
 
     if (optc < 2)
-        return show16("lupy_count", 0x003A);
+        return show16("lupy_count", file_offset);
     input = strtol(optv[1], NULL, 0);
-    return sendx16(0x003A, input);
+    return sendx16(file_offset, input);
 }
 
 int long_sword_hp(int optc, char ** optv)
 {
     signed long input;
+    const size_t file_offset = 0x00003C;
 
     if (optc < 2)
-        return show16("long_sword_hp", 0x003C);
+        return show16("long_sword_hp", file_offset);
     input = strtol(optv[1], NULL, 0);
-    return sendx16(0x003C, input);
+    return sendx16(file_offset, input);
 }
 
 int collect_register(int optc, char ** optv)
 {
     unsigned long input;
+    const size_t file_offset = 0x0000BC;
 
     if (optc < 2)
-        return show32("collect_register", 0x00BC);
+        return show32("collect_register", file_offset);
     input = strtoul(optv[1], NULL, 2);
-    return send32(0x00BC, input);
+    return send32(file_offset, input);
 }
 
 int key_compass_map(int optc, char ** optv)
 {
     unsigned long input;
-    unsigned int offset;
+    unsigned int dungeon_ID;
+    const size_t file_offset = 0x0000C0;
 
     if (optc < 2)
         return ERR_INTEGER_COUNT_INSUFFICIENT;
@@ -163,17 +181,18 @@ int key_compass_map(int optc, char ** optv)
     if (input > 9) /* 0x00C0:0x00C9 */
         return ERR_INTEGER_TOO_LARGE;
 
-    offset = (unsigned int)input;
+    dungeon_ID = (unsigned int)input;
     if (optc < 3)
-        return show8("key_compass_map", 0x00C0 + offset);
+        return show8("key_compass_map", file_offset + dungeon_ID);
     input = strtoul(optv[2], NULL, 2);
-    return send8(0x00C0 + offset, input);
+    return send8(file_offset + dungeon_ID, input);
 }
 
 int key_register(int optc, char ** optv)
 {
     unsigned long input;
-    unsigned int offset;
+    unsigned int dungeon_ID;
+    const size_t file_offset = 0x0000CA;
 
     if (optc < 2)
         return ERR_INTEGER_COUNT_INSUFFICIENT;
@@ -181,17 +200,18 @@ int key_register(int optc, char ** optv)
     if (input > 9) /* 0x00CA:0x00D3 */
         return ERR_INTEGER_TOO_LARGE;
 
-    offset = (unsigned int)input;
+    dungeon_ID = (unsigned int)input;
     if (optc < 3)
-        return show8("key_register", 0x00CA + offset);
+        return show8("key_register", file_offset + dungeon_ID);
     input = strtoul(optv[2], NULL, 0);
-    return send8(0x00CA + offset, input);
+    return send8(file_offset + dungeon_ID, input);
 }
 
 int orange_fairy(int optc, char ** optv)
 {
     unsigned long input;
-    unsigned int offset;
+    unsigned int dungeon_ID;
+    const size_t file_offset = 0x0000D4;
 
     if (optc < 2)
         return ERR_INTEGER_COUNT_INSUFFICIENT;
@@ -199,11 +219,11 @@ int orange_fairy(int optc, char ** optv)
     if (input > 9) /* 0x00D4:0x00DD */
         return ERR_INTEGER_TOO_LARGE;
 
-    offset = (unsigned int)input;
+    dungeon_ID = (unsigned int)input;
     if (optc < 3)
-        return show8("orange_fairy", 0x00D4 + offset);
+        return show8("orange_fairy", file_offset + dungeon_ID);
     input = strtoul(optv[2], NULL, 0);
-    return send8(0x00D4 + offset, input);
+    return send8(file_offset + dungeon_ID, input);
 }
 
 int magic_number_test(unsigned int section_ID)
@@ -211,10 +231,11 @@ int magic_number_test(unsigned int section_ID)
     const u8 * section;
     u8 bytes[BYTES_IN_MAGIC_NUMBER];
     register size_t i;
+    const size_t file_offset = 0x000024;
 
     section = &flash_RAM[FILE_SIZE * (section_ID & 0xF)];
     for (i = 0; i < BYTES_IN_MAGIC_NUMBER; i++)
-        bytes[i] = read8(section + 0x0024 + i);
+        bytes[i] = read8(section + file_offset + i);
     return memcmp(bytes, newf, BYTES_IN_MAGIC_NUMBER * sizeof(u8));
 }
 
