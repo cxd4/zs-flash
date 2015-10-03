@@ -44,7 +44,7 @@ int zelda_time(int optc, char ** optv)
 
     if (optc < 2)
         return show16("zelda_time", 0x000C);
-    input = strtol(optv[1], NULL, 0);
+    input = strtoul(optv[1], NULL, 0);
     return send16(0x000C, input);
 }
 
