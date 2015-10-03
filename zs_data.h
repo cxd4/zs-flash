@@ -1,6 +1,9 @@
 #ifndef _ZS_DATA_H_
 #define _ZS_DATA_H_
 
+/* to have `size_t` available */
+#include <stddef.h>
+
 #define BYTES_IN_MAGIC_NUMBER           6
 
 typedef int(*p_opt)(int optc, char ** argv);
@@ -53,10 +56,20 @@ extern int magic_number_test(unsigned int section_ID);
  */
 extern u16 fix_checksum(unsigned int section_ID);
 
+/*
+ * high-level functions to display the current value
+ * of a named game data field in flash memory
+ */
 extern int show8 (const char * name, size_t offset);
 extern int show16(const char * name, size_t offset);
 extern int show32(const char * name, size_t offset);
 
+/*
+ * high-level functions to overwrite the value of game data in flash memory
+ *
+ * The low-level approach would be calling write8 and friends directly, but
+ * that approach does not handle well-defined type range conversion.
+ */
 extern int send8 (size_t offset, unsigned long input); /* zero-extended */
 extern int send16(size_t offset, unsigned long input);
 extern int send32(size_t offset, unsigned long input);

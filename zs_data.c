@@ -285,6 +285,12 @@ int zs_file_pointer(int optc, char ** optv)
     return ERR_NONE;
 }
 
+/*
+ * end of save data field functions and documentation
+ *
+ * These following nine high-level functions are to make well-defined type
+ * range conversion easier and optimize the code for small call stack size.
+ */
 int show8(const char * name, size_t offset)
 {
     u8 output;
