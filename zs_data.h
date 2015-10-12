@@ -6,6 +6,9 @@
 
 #define BYTES_IN_MAGIC_NUMBER           6
 
+/* numbers per lottery ticket */
+#define NUMBERS_PER_TICKET              3
+
 typedef int(*p_opt)(int optc, char ** argv);
 extern p_opt * opt_table;
 
@@ -16,7 +19,6 @@ extern unsigned int swap_mask;
  * It basically is a reference to &flash_RAM[section_ID << 13].
  */
 extern u8 * file;
-
 
 extern int player_mask(int optc, char ** optv);
 extern int zelda_time(int optc, char ** optv);
@@ -32,6 +34,7 @@ extern int collect_register(int optc, char ** optv);
 extern int key_compass_map(int optc, char ** optv);
 extern int key_register(int optc, char ** optv);
 extern int orange_fairy(int optc, char ** optv);
+extern int numbers_table(int optc, char ** optv);
 
 extern void init_options(void);
 extern int reserved(int optc, char ** optv);

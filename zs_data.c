@@ -226,6 +226,42 @@ int orange_fairy(int optc, char ** optv)
     return send8(file_offset + dungeon_ID, input);
 }
 
+int numbers_table(int optc, char ** optv)
+{
+    u8 numbers[3][NUMBERS_PER_TICKET];
+    unsigned long input;
+    unsigned int day, i;
+    const size_t file_offset = 0x000FEC;
+
+    if (optc < 2)
+        return ERR_INTEGER_COUNT_INSUFFICIENT;
+    input = strtoul(optv[1], NULL, 0);
+    if (input > 2) /* 0x0FEC:0x0FF4 */
+        return ERR_INTEGER_TOO_LARGE;
+
+    day = (unsigned int)input;
+    for (i = 0; i < NUMBERS_PER_TICKET; i++)
+        numbers[day][i] = read8(&file[file_offset + 3*day + i]);
+    if (optc < 5) {
+        printf(
+            "%s (day %u):  { %u, %u, %u }\n",
+            "numbers_table", day + 1,
+            numbers[day][0], numbers[day][1], numbers[day][2]
+        );
+        return ERR_NONE;
+    }
+
+    for (i = 0; i < NUMBERS_PER_TICKET; i++) {
+        input = strtoul(optv[i + 2], NULL, 0);
+        if (input > 0x000000FFul)
+            return ERR_INTEGER_TOO_LARGE;
+        numbers[day][i] = (u8)input;
+    }
+    for (i = 0; i < NUMBERS_PER_TICKET; i++)
+        write8(&file[file_offset + 3*day + i], numbers[day][i]);
+    return ERR_NONE;
+}
+
 int magic_number_test(unsigned int section_ID)
 {
     const u8 * section;
@@ -474,6 +510,7 @@ void init_options(void)
     opt_table['d'] = key_compass_map; /* boss key and dungeon map and compass */
     opt_table['f'] = orange_fairy; /* stray fairies collected per region */
     opt_table['k'] = key_register; /* small keys per temple */
+    opt_table['l'] = numbers_table; /* winning lottery numbers for all nights */
     opt_table['m'] = player_mask; /* currently worn mask */
     opt_table['p'] = player_character; /* current mask transformation */
     opt_table['q'] = collect_register; /* Quest Status sub-screen data */
