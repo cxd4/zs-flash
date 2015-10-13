@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include <ctype.h>
 #include <errno.h>
 #include <limits.h>
 
@@ -96,6 +97,15 @@ int bell_flag(int optc, char ** optv)
         return show8("bell_flag", file_offset);
     input = strtoul(optv[1], NULL, 0);
     return send8(file_offset, input);
+}
+
+int player_name(int optc, char ** optv)
+{
+    const size_t file_offset = 0x00002C;
+
+    if (optc < 2)
+        return show64("player_name", file_offset);
+    return send64(file_offset, optv[1]);
 }
 
 int life_energy_points(int optc, char ** optv)
@@ -372,6 +382,17 @@ int show32(const char * name, size_t offset)
     printf("%s:  0x%08X\n", name, output);
     return ERR_NONE;
 }
+int show64(const char * name, size_t offset)
+{
+    u64 output;
+    u32 words[2];
+
+    output = read64(file + offset);
+    words[1] = (u32)(output >>  0);
+    words[0] = (u32)(output >> 32);
+    printf("%s:  0x%08X%08X\n", name, words[0], words[1]);
+    return ERR_NONE;
+}
 
 int send8(size_t offset, unsigned long input)
 {
@@ -407,6 +428,41 @@ int send32(size_t offset, unsigned long input)
         return ERR_INTEGER_TOO_LARGE;
     output = (u32)input;
     write32(file + offset, output);
+    return ERR_NONE;
+}
+int send64(size_t offset, char * argument_string)
+{
+    u64 output, old_output;
+    register size_t i;
+
+/*
+ * ANSI C does not define a guaranteed 64-bit type.
+ *
+ * That would not be a problem if the 64-bit Windows ABI wasn't dumb.
+ * On virtually any other 64-bit OS, `long` and strtol() are sufficient.
+ */
+    output = 0x0000000000000000;
+    old_output = output;
+
+    for (i = 0; i < strlen(argument_string); i++)
+    {
+        unsigned char converted = 0;
+        const int capital = toupper(argument_string[i]);
+
+        if (i == 1)
+            if (argument_string[0] == '0' && capital == 'X')
+                continue;
+        if (capital >= '0' && capital <= '9')
+            converted = (unsigned char)(capital - '0' + 0x0);
+        else if (capital >= 'A' && capital <= 'F')
+            converted = (unsigned char)(capital - 'A' + 0xA);
+        output = 16*output + converted;
+
+        if (output < old_output) /* Check for unsigned overflow. */
+            return ERR_INTEGER_TOO_LARGE;
+        old_output = output;
+    }
+    write64(file + offset, output);
     return ERR_NONE;
 }
 
@@ -504,6 +560,7 @@ void init_options(void)
     opt_table['F'] = bell_flag; /* enables/disables Tatl */
     opt_table['L'] = life_energy_points; /* current H.P. out of max H.P. */
     opt_table['M'] = magic_points; /* current M.P. out of max M.P. */
+    opt_table['N'] = player_name; /* Link's name and the file select name */
     opt_table['R'] = long_sword_hp; /* Razor Sword durability */
     opt_table['Z'] = change_zelda_time; /* (time_rate + 3) time acceleration */
 

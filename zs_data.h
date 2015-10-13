@@ -26,6 +26,7 @@ extern int change_zelda_time(int optc, char ** optv);
 extern int totalday(int optc, char ** optv);
 extern int player_character(int optc, char ** optv);
 extern int bell_flag(int optc, char ** optv);
+extern int player_name(int optc, char ** optv);
 extern int life_energy_points(int optc, char ** optv); /* max_life, now_life */
 extern int magic_points(int optc, char ** optv); /* magic_max, magic_now */
 extern int lupy_count(int optc, char ** optv);
@@ -66,6 +67,7 @@ extern u16 fix_checksum(unsigned int section_ID);
 extern int show8 (const char * name, size_t offset);
 extern int show16(const char * name, size_t offset);
 extern int show32(const char * name, size_t offset);
+extern int show64(const char * name, size_t offset);
 
 /*
  * high-level functions to overwrite the value of game data in flash memory
@@ -76,6 +78,7 @@ extern int show32(const char * name, size_t offset);
 extern int send8 (size_t offset, unsigned long input); /* zero-extended */
 extern int send16(size_t offset, unsigned long input);
 extern int send32(size_t offset, unsigned long input);
+extern int send64(size_t offset, char * argument_string);
 
 extern int sendx8 (size_t offset, signed long input); /* sign-extended */
 extern int sendx16(size_t offset, signed long input);
