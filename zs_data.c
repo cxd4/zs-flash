@@ -534,9 +534,16 @@ int opt_execute(char ** optv)
 
     while (optv[optc] != NULL)
     {
+        long option_name_as_a_number;
+        int not_a_number;
+
         if (optv[optc][0] == '\0')
             break; /* We've reached the end of the command buffer. */
-        if (optv[optc][0] == '-')
+
+        option_name_as_a_number = strtol(&optv[optc][1], NULL, 0);
+        not_a_number = (option_name_as_a_number == 0) ? 1 : 0;
+
+        if (optv[optc][0] == '-' && not_a_number)
             break;
         ++optc;
     }
@@ -579,6 +586,6 @@ void init_options(void)
  * Nothing here is pertinent to the game's saved progress data itself.
  */
     opt_table['0'] = zs_endian_swap_mask;
-    opt_table['1'] = zs_file_pointer;
+    opt_table['@'] = zs_file_pointer;
     return;
 }
