@@ -13,8 +13,8 @@ REM
 REM        Example:  zs.exe %SAVE_FILE% -f 0 15 -f 1 15 -f 2 15 -f 3 15
 REM        ... versus ...
 REM        zs.exe %SAVE_FILE%^
-REM         -f 0 15 "Have fifteen Woodfall stray fairies."
-REM         -f 1 15 "Have fifteen Snowhead stray fairies." ... and so on
+REM         -f 0 15 "Have fifteen Woodfall stray fairies."^
+REM         -f 1 15 "Have fifteen Snowhead stray fairies."^ ... and so on
 
 zs %SAVE_FILE%^
  -@ 0^
