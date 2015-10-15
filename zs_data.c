@@ -168,6 +168,49 @@ int long_sword_hp(int optc, char ** optv)
     return sendx16(file_offset, input);
 }
 
+int item_register(int optc, char ** optv)
+{
+    u8 inv[INVENTORY_TABLE_HEIGHT][INVENTORY_TABLE_WIDTH];
+    size_t file_offset;
+    unsigned long input, x, y;
+    int subscreen_type;
+
+    if (optc < 2)
+        return ERR_INTEGER_COUNT_INSUFFICIENT;
+    subscreen_type = toupper(optv[1][0]);
+    file_offset  = 0x000070;
+    file_offset += (subscreen_type == 'M') ? 0x0018 : 0x0000;
+
+    for (y = 0; y < INVENTORY_TABLE_HEIGHT; y++)
+        for (x = 0; x < INVENTORY_TABLE_WIDTH; x++)
+            inv[y][x] = file[file_offset + x + y*INVENTORY_TABLE_WIDTH];
+
+    if (optc < 3 + 1 + 1) { /* argv < "-I (string) (x) (y) (ITEM_ID)" */
+        printf(
+            "%s (%s):\n"\
+            "\t%02X %02X %02X %02X %02X %02X\n"\
+            "\t%02X %02X %02X %02X %02X %02X\n"\
+            "\t%02X %02X %02X %02X %02X %02X\n"\
+            "\t%02X %02X %02X %02X %02X %02X\n",
+
+            "item_register",
+            (subscreen_type == 'M') ? "masks" : "items",
+            inv[0][0], inv[0][1], inv[0][2], inv[0][3], inv[0][4], inv[0][5],
+            inv[1][0], inv[1][1], inv[1][2], inv[1][3], inv[1][4], inv[1][5],
+            inv[2][0], inv[2][1], inv[2][2], inv[2][3], inv[2][4], inv[2][5],
+            inv[3][0], inv[3][1], inv[3][2], inv[3][3], inv[3][4], inv[3][5]
+        );
+        return ERR_NONE;
+    }
+    x = strtoul(optv[2], NULL, 0);
+    y = strtoul(optv[3], NULL, 0);
+
+    if (x >= INVENTORY_TABLE_WIDTH || y >= INVENTORY_TABLE_HEIGHT)
+        return ERR_INTEGER_TOO_LARGE;
+    input = strtoul(optv[4], NULL, 16);
+    return send8(file_offset + x + y*INVENTORY_TABLE_WIDTH, input);
+}
+
 int collect_register(int optc, char ** optv)
 {
     unsigned long input;
@@ -565,6 +608,7 @@ void init_options(void)
 
     opt_table['D'] = totalday; /* current day number, preferably from 1 to 4 */
     opt_table['F'] = bell_flag; /* enables/disables Tatl */
+    opt_table['I'] = item_register; /* Item and Mask Subscreen mappings */
     opt_table['L'] = life_energy_points; /* current H.P. out of max H.P. */
     opt_table['M'] = magic_points; /* current M.P. out of max M.P. */
     opt_table['N'] = player_name; /* Link's name and the file select name */
