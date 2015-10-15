@@ -68,6 +68,16 @@ zs %SAVE_FILE%^
  -I it 0 2 0C -I it 1 2 0D -I it 2 2 0E -I it 3 2 0F -I it 4 2 10 -I it 5 2 11^
  -I it 0 3 12 -I it 1 3 16 -I it 2 3 20 -I it 3 3 25 -I it 4 3 27 -I it 5 3 15^
  -I masks^
+ ^
+ -i 1 50 "Have 50 arrows."^
+ -i 6 40 -i 7 40 "Have 40 bombs and bombchu."^
+ -i 8 10 "Have 10 deku sticks.  (I hate how only OOT has an upgrade for 20.)"^
+ -i 9 20 "Have 20 deku nuts.  (Again, only OOT seems to have upgrades, here.)"^
+ -i 10 20 "Have 20 magic beans."^
+ -i 12 2 "Have...TWO powder kegs!  Though the max is still 1. :("^
+ -i 13 0^
+ -i 0 1 -i 2 1 -i 3 1 -i 4 1 -i 5 1 -i 11 1 -i 14 1 -i 15 1 -i 16 1 -i 17 1^
+ -i 18 1 -i 19 1 -i 20 1 -i 21 1 -i 22 1 -i 23 1^
  -@ 0
 
 pause

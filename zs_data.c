@@ -211,6 +211,27 @@ int item_register(int optc, char ** optv)
     return send8(file_offset + x + y*INVENTORY_TABLE_WIDTH, input);
 }
 
+int item_count(int optc, char ** optv)
+{
+    unsigned long input;
+    signed long count;
+    unsigned int item_ID;
+    const size_t file_offset = 0x0000A0;
+
+    if (optc < 2)
+        return ERR_INTEGER_COUNT_INSUFFICIENT;
+    input = strtoul(optv[1], NULL, 0);
+
+    if (input > 0x0017)
+        return ERR_INTEGER_TOO_LARGE;
+    item_ID = (unsigned int)input;
+
+    if (optc < 3)
+        return show8("item_count", file_offset + item_ID);
+    count = strtol(optv[2], NULL, 10);
+    return sendx8(file_offset + item_ID, count);
+}
+
 int collect_register(int optc, char ** optv)
 {
     unsigned long input;
@@ -617,6 +638,7 @@ void init_options(void)
 
     opt_table['d'] = key_compass_map; /* boss key and dungeon map and compass */
     opt_table['f'] = orange_fairy; /* stray fairies collected per region */
+    opt_table['i'] = item_count; /* inventory counts (generally ammo) */
     opt_table['k'] = key_register; /* small keys per temple */
     opt_table['l'] = numbers_table; /* winning lottery numbers for all nights */
     opt_table['m'] = player_mask; /* currently worn mask */
