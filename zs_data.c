@@ -169,6 +169,17 @@ int long_sword_hp(int optc, char ** optv)
     return sendx16(file_offset, input);
 }
 
+int memory_warp_point(int optc, char ** optv)
+{
+    unsigned long input;
+    const size_t file_offset = 0x000046;
+
+    if (optc < 2)
+        return show16("memory_warp_point", file_offset);
+    input = strtoul(optv[1], NULL, 2);
+    return send16(file_offset, input);
+}
+
 int item_register(int optc, char ** optv)
 {
     u8 inv[INVENTORY_TABLE_HEIGHT][INVENTORY_TABLE_WIDTH];
@@ -643,6 +654,7 @@ void init_options(void)
     opt_table['k'] = key_register; /* small keys per temple */
     opt_table['l'] = numbers_table; /* winning lottery numbers for all nights */
     opt_table['m'] = player_mask; /* currently worn mask */
+    opt_table['o'] = memory_warp_point; /* activated owl statues */
     opt_table['p'] = player_character; /* current mask transformation */
     opt_table['q'] = collect_register; /* Quest Status sub-screen data */
     opt_table['r'] = lupy_count; /* That means "Rupees". */
