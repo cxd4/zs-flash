@@ -133,6 +133,32 @@ skip_inventory_reset:
     write16(file + 0x1008, 0x2AAC); /* "horse_a" wtf is this. */
     return ERR_NONE;
 }
+int file_copy(int optc, char ** optv)
+{
+    u8 * destination_file;
+    unsigned long input;
+    unsigned int file_page_ID;
+    register size_t i;
+
+    if (optc < 2)
+        return ERR_INTEGER_COUNT_INSUFFICIENT;
+    input = strtoul(optv[1], NULL, 8);
+
+    if (input > 017)
+        return ERR_INTEGER_TOO_LARGE;
+    file_page_ID = (unsigned int)input;
+
+    destination_file = &flash_RAM[file_page_ID * FILE_SIZE];
+    if (destination_file == file)
+        return ERR_NONE; /* null operation:  file copied onto itself */
+
+    for (i = 0x0000; i < FILE_SIZE; i += 8)
+        write64(
+            &destination_file[i],
+            read64(file + i)
+        );
+    return ERR_NONE;
+}
 
 int player_mask(int optc, char ** optv)
 {
@@ -786,5 +812,6 @@ void init_options(void)
 
     opt_table['&'] = file_erase;
     opt_table['|'] = file_new;
+    opt_table['~'] = file_copy;
     return;
 }

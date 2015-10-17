@@ -62,6 +62,7 @@ extern int zs_file_pointer(int optc, char ** optv);
  */
 extern int file_erase(int optc, char ** optv);
 extern int file_new(int optc, char ** optv);
+extern int file_copy(int optc, char ** optv);
 
 /*
  * "ZELDA3" is the magic number.  If it's stored at 0x0024 into the section
