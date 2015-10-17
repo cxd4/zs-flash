@@ -244,6 +244,17 @@ int item_count(int optc, char ** optv)
     return sendx8(file_offset + item_ID, count);
 }
 
+int non_equip_register(int optc, char ** optv)
+{
+    unsigned long input;
+    const size_t file_offset = 0x0000B8;
+
+    if (optc < 2)
+        return show32("non_equip_register", file_offset);
+    input = strtoul(optv[1], NULL, 16);
+    return send32(file_offset, input);
+}
+
 int collect_register(int optc, char ** optv)
 {
     unsigned long input;
@@ -646,6 +657,7 @@ void init_options(void)
     opt_table['M'] = magic_points; /* current M.P. out of max M.P. */
     opt_table['N'] = player_name; /* Link's name and the file select name */
     opt_table['R'] = long_sword_hp; /* Razor Sword durability */
+    opt_table['U'] = non_equip_register; /* permanent equipment upgrades */
     opt_table['Z'] = change_zelda_time; /* (time_rate + 3) time acceleration */
 
     opt_table['d'] = key_compass_map; /* boss key and dungeon map and compass */

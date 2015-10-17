@@ -59,6 +59,8 @@ zs %SAVE_FILE%^
  -M 1 0^
  -M 0 0x7F^
  -o 1000001111111111^
+ -U^
+ -U 0xFFFFE01B^
  ^
  -l 0 4 2 0 "Day 1 winning lottery ticket numbers:  420"^
  -l 1 4 2 0 "Day 2 winning lottery ticket numbers:  420"^
