@@ -29,7 +29,7 @@ zs %SAVE_FILE%^
  -F^
  -F 0^
  -N^
- -N 0x152C312E3E3E3E3E "File 1's name:  Link"^
+ -N 0x0A0A0A0A0A0A0A0A "File 1's name:  AAAAAAAA"^
  -D^
  -D 2 "Read the GitHub wiki if you want to know what this does. :)"^
  -z^
@@ -84,7 +84,9 @@ zs %SAVE_FILE%^
  -i 0 1 -i 2 1 -i 3 1 -i 4 1 -i 5 1 -i 11 1 -i 14 1 -i 15 1 -i 16 1 -i 17 1^
  -i 18 1 -i 19 1 -i 20 1 -i 21 1 -i 22 1 -i 23 1^
  ^
- "-@" 0^
- "-~" 2
+ "-~" 2^
+ "-@" 2^
+ -N 0x0B0B0B0B0B0B0B0B "File 2's name:  BBBBBBBB"^
+ "-^" 0 "swaps File 2 with File 1"
 
 pause

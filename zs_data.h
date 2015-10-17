@@ -62,6 +62,7 @@ extern int zs_file_pointer(int optc, char ** optv);
  */
 extern int file_erase(int optc, char ** optv);
 extern int file_new(int optc, char ** optv);
+extern int file_swap(int optc, char ** optv);
 extern int file_copy(int optc, char ** optv);
 
 /*
