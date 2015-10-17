@@ -70,6 +70,8 @@ fixrand: /* The Bombers' password can't use any digit more than once. */
                 goto fixrand;
         write8(file + i, random_digit);
     }
+
+    write64(file + 0x0024, 0x5A454C4441330000); /* magic no. & `savect` reset */
     if (optc < 2)
         return ERR_NONE;
 
