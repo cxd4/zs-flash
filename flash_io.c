@@ -259,7 +259,7 @@ unsigned int swap_flash(unsigned int interval)
             fprintf(stdout, "Detected %s data.", "64-bit byte-swapped");
             break;
         default:
-            fprintf(stderr, "Flash formatting damaged or unsupported.");
+            fprintf(stderr, "Flash formatting damaged or unsupported.\n");
             return (mask = ~0u);
         }
     }
