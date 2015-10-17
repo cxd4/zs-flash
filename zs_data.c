@@ -30,6 +30,26 @@ static const u8 newf[BYTES_IN_MAGIC_NUMBER] = {
  */
 u8 * file = &flash_RAM[0 * FILE_SIZE];
 
+int file_erase(int optc, char ** optv)
+{
+    int response;
+    const int skip_warn = (optc > 1) ? 1 : 0;
+    const int wipe_mode = (optc > 2) ? ~0x00 : 0x00;
+
+    if (skip_warn)
+        if (strcmp(optv[1], "NOCONFIRM") == 0)
+            goto skip_confirmation;
+    printf("Erasing game data at %p.  Continue?  ", file - flash_RAM);
+    response = getchar();
+    if (response % 2 == 0)
+        return ERR_NONE;
+
+skip_confirmation:
+    memset(file, wipe_mode, FILE_SIZE);
+    puts("File has been deleted.");
+    return ERR_NONE;
+}
+
 int player_mask(int optc, char ** optv)
 {
     unsigned long input;
@@ -601,6 +621,7 @@ int sendx32(size_t offset, signed long input)
 
 int reserved(int optc, char ** optv)
 {
+    puts(optv[0]);
     optc = optc; /* unused */
     return (optv[0][0] == '-') ?
         ERR_OPTION_NOT_IMPLEMENTED
@@ -678,5 +699,7 @@ void init_options(void)
  */
     opt_table['0'] = zs_endian_swap_mask;
     opt_table['@'] = zs_file_pointer;
+
+    opt_table['&'] = file_erase;
     return;
 }

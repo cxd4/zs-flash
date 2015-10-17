@@ -22,6 +22,7 @@ zs %SAVE_FILE%^
  ^
  "Write on the console which mask Link is currently wearing."^
  -m^
+ "-&" "Ask to wipe the save file to a blank slate."^
  ^
  -m 0x00 "Sets our preference:  Link is wearing no mask on his face."^
  -F^

@@ -50,6 +50,16 @@ extern int zs_endian_swap_mask(int optc, char ** optv);
 extern int zs_file_pointer(int optc, char ** optv);
 
 /*
+ * Basic game data save file operations--NEW, ERASE, COPY, and SWAP.
+ *
+ * I originally did not care to implement these but realized that for
+ * advanced command scripting it can be helpful to "copy" entire file
+ * changes or to execute all edit commands on a surely new or "erased" file.
+ * SWAP is nice because if all files are in use, the game can't copy either.
+ */
+extern int file_erase(int optc, char ** optv);
+
+/*
  * "ZELDA3" is the magic number.  If it's stored at 0x0024 into the section
  * in question, then said section stores game data for a saved file.
  *
