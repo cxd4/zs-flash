@@ -17,6 +17,7 @@ REM         -f 0 15 "Have fifteen Woodfall stray fairies."^
 REM         -f 1 15 "Have fifteen Snowhead stray fairies."^ ... and so on
 
 zs %SAVE_FILE%^
+ -= 3 "Force 32-bit byte order swap OUTPUT (not input) (most N64 emulators)."^
  -@ 0^
  "-@ 0 means File 1 receives all the below changes."^
  ^

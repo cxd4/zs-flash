@@ -835,7 +835,7 @@ void init_options(void)
  * special-purpose command-line options fundamental to the flash RAM access
  * Nothing here is pertinent to the game's saved progress data itself.
  */
-    opt_table['0'] = zs_endian_swap_mask;
+    opt_table['='] = zs_endian_swap_mask;
     opt_table['@'] = zs_file_pointer;
 
     opt_table['&'] = file_erase;
