@@ -19,7 +19,7 @@ u8 read8(const void * address)
         my_error(ERR_RD_FLASH_ACCESS_VIOLATION);
         return 0x00u; /* N64 RCP reads 0 from un-mapped DRAM. */
     }
-    memcpy(&octet, address, sizeof(i8));
+    memcpy(&octet, address, sizeof(u8));
     return (octet &= 0xFFu);
 }
 
@@ -29,8 +29,9 @@ u16 read16(const void * address)
     u16 halfword; /* MIPS and from the game's point of view */
 
     addr = (const u8 *)address;
-    halfword  = (u16)read8(addr + 0) << 8;
-    halfword |= (u16)read8(addr + 1) << 0;
+    halfword  = (u16)read8(addr + 0) & 0x00FFu;
+    halfword  = (halfword << 8) & 0xFF00u;
+    halfword |= (u16)read8(addr + 1) & 0x00FFu;
     return (halfword & 0x000000000000FFFFu);
 }
 
@@ -40,8 +41,9 @@ u32 read32(const void * address)
     u32 word; /* MIPS and from the game's point of view */
 
     addr = (const u8 *)address;
-    word  = (u32)read16(addr + 0) << 16;
-    word |= (u32)read16(addr + 2) <<  0;
+    word  = (u32)read16(addr + 0) & 0xFFFFu;
+    word  = (word << 16) & 0xFFFF0000ul;
+    word |= (u32)read16(addr + 2) & 0xFFFFu;
     return (word & 0x00000000FFFFFFFFul);
 }
 
@@ -51,8 +53,9 @@ u64 read64(const void * address)
     u64 doubleword;
 
     addr = (const u8 *)address;
-    doubleword  = (u64)read32(addr + 0) << 32;
-    doubleword |= (u64)read32(addr + 4) <<  0;
+    doubleword  = (u64)read32(addr + 0) & 0x00000000FFFFFFFFul;
+    doubleword  = doubleword << 32;
+    doubleword |= (u64)read32(addr + 4) & 0x00000000FFFFFFFFul;
     return (doubleword);
 }
 
@@ -68,7 +71,7 @@ void write8(void * dst, const u8 src)
         my_error(ERR_WR_FLASH_ACCESS_VIOLATION);
         return; /* N64 RCP writes nothing to un-mapped memory. */
     }
-    memcpy(dst, &src, sizeof(i8));
+    memcpy(dst, &src, sizeof(u8));
     return;
 }
 
