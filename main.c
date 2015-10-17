@@ -22,10 +22,7 @@ int main(int argc, char ** argv)
 
     swap_mask = swap_flash(0);
     if (swap_mask == ~0u)
-    {
         my_error(ERR_MEMORY_FORMAT_UNKNOWN);
-        return ERR_MEMORY_FORMAT_UNKNOWN;
-    }
 
     i = 2; /* The first two arguments can't be part of editing the save data. */
     init_options();
