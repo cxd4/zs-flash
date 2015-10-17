@@ -9,6 +9,9 @@
 #define INVENTORY_TABLE_WIDTH           6
 #define INVENTORY_TABLE_HEIGHT          4
 
+/* apparently 16 health points (or hit points) per heart */
+#define HEART_HP                        16
+
 /* numbers per lottery ticket */
 #define NUMBERS_PER_TICKET              3
 
@@ -58,6 +61,7 @@ extern int zs_file_pointer(int optc, char ** optv);
  * SWAP is nice because if all files are in use, the game can't copy either.
  */
 extern int file_erase(int optc, char ** optv);
+extern int file_new(int optc, char ** optv);
 
 /*
  * "ZELDA3" is the magic number.  If it's stored at 0x0024 into the section

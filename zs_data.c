@@ -6,6 +6,7 @@
 #include <ctype.h>
 #include <errno.h>
 #include <limits.h>
+#include <time.h>
 
 #include "errors.h"
 #include "flash_io.h"
@@ -47,6 +48,89 @@ int file_erase(int optc, char ** optv)
 skip_confirmation:
     memset(file, wipe_mode, FILE_SIZE);
     puts("File has been deleted.");
+    return ERR_NONE;
+}
+int file_new(int optc, char ** optv)
+{
+    u64 filled_doubleword;
+    register size_t i;
+
+    srand((unsigned int)time(NULL));
+    for (i = 0x0FEC; i < 0x0FF5; i += 1) /* random lottery ticket numbers */
+        write8(file + i, (unsigned char)(rand() % 10));
+    for (i = 0x0FF5; i < 0x0FFB; i += 1) /* oceanic spider house shoot order */
+        write8(file + i, (unsigned char)(rand() % 4));
+    for (i = 0x0FFB; i < 0x1000; i += 1) { /* Bombers' password table */
+        unsigned char random_digit;
+        register size_t j;
+fixrand: /* The Bombers' password can't use any digit more than once. */
+        random_digit = (unsigned char)(rand() % 5) + 1;
+        for (j = 0x0FFB; j < i; j++)
+            if (random_digit == read8(file + j))
+                goto fixrand;
+        write8(file + i, random_digit);
+    }
+    if (optc < 2)
+        return ERR_NONE;
+
+    write32(file + 0x0000, 0x00001C00);
+    write8 (file + 0x0005, 0); /* enables opening prologue */
+    write32(file + 0x0008, 0x0000FFF0); /* wut... */
+    write16(file + 0x000C, 0x3FFF); /* approximately 8 AM */
+
+    write8 (file + 0x0020, 4); /* normal Link, without transformation */
+    write16(file + 0x0034, 3 * HEART_HP); write16(file + 0x0036, 3 * HEART_HP);
+    write8 (file + 0x0038, 0); write8 (file + 0x0039, 48); /* 48/0 MP??? */
+
+    write8 (file + 0x0044, 0xFF); /* "first_memory" wtf is this */
+    write8 (file + 0x0048, 0xFF); /* "last_warp_point" wtf is this */
+    write16(file + 0x004A, 0x0008); /* "scene_data_ID" LOLWUT!  never changes */
+
+    for (i = 0x004C; i < 0x005C - 4; i += 4)
+        write32(file + i, 0x4DFFFFFF);
+    write32(file + 0x0058, 0xFFFFFFFDul);
+
+    write32(file + 0x005C, 0xFFFFFF00ul);
+    for (i = 0x005C + 4; i < 0x006C; i += 4)
+        write32(file + i, 0xFFFFFFFFul);
+
+    filled_doubleword = 0ul;
+    filled_doubleword = ~(filled_doubleword);
+
+    if (toupper(optv[1][0]) == 'K')
+        goto skip_inventory_reset;
+    write16(file + 0x006C, 0x0011); /* "equip_item" wtf is this */
+    for (i = 0x0070; i < 0x00A0; i += 8)
+        write64(file + i, filled_doubleword);
+    for (i = 0x00A0; i < 0x00B8; i += 8)
+        write64(file + i, 0);
+    write32(file + 0x00B8, 0x00120000);
+    write32(file + 0x00BC, 0x00000000);
+skip_inventory_reset:
+
+    for (i = 0x00CA; i < 0x00D4 - 1; i++)
+        write8(file + i, 0xFF); /* -1 small keys for 9/10 dungeons...uh, why? */
+    write8(file + i, 0x00); /* 0 keys for the 10th...must be a bug in ROM */
+
+ /* "degnuts_memory_name" -- appears to always store 3 copies of player_name */
+    filled_doubleword = read64(file + 0x002C);
+    for (i = 0x00DE; i < 0x00F6; i += 8)
+        write64(file + i, filled_doubleword);
+
+ /* unnamed giant heap of data in the file--no clue what goes on here */
+    write32(file + 0x0E6C, 0x1D4C);
+    write32(file + 0x0E70, 0x1D4C);
+    write32(file + 0x0E74, 0x1DB0);
+    write16(file + 0x0EE8, 0x13);
+    write16(file + 0x0EEA, 0x0A);
+    write16(file + 0x0EEE, 0x00001770);
+    write32(file + 0x0EF4, 0x000A0027);
+
+    write16(file + 0x1000, 0x0035); /* "spot_no":  same WTF as scene_data_ID */
+    write16(file + 0x1002, 0xFA74); /* Epona's x-coordinate */
+    write16(file + 0x1004, 0x0101); /* Epona's y-coordinate */
+    write16(file + 0x1006, 0xFAFB); /* Epona's z-coordinate */
+    write16(file + 0x1008, 0x2AAC); /* "horse_a" wtf is this. */
     return ERR_NONE;
 }
 
@@ -701,5 +785,6 @@ void init_options(void)
     opt_table['@'] = zs_file_pointer;
 
     opt_table['&'] = file_erase;
+    opt_table['|'] = file_new;
     return;
 }

@@ -23,6 +23,7 @@ zs %SAVE_FILE%^
  "Write on the console which mask Link is currently wearing."^
  -m^
  "-&" "Ask to wipe the save file to a blank slate."^
+ "-|" "Initialize basic data for a new game, like the ROM does."^
  ^
  -m 0x00 "Sets our preference:  Link is wearing no mask on his face."^
  -F^
