@@ -23,8 +23,6 @@ zs %SAVE_FILE%^
  ^
  "Write on the console which mask Link is currently wearing."^
  -m^
- "-&" "Ask to wipe the save file to a blank slate."^
- "-|" "Initialize basic data for a new game, like the ROM does."^
  ^
  -m 0x00 "Sets our preference:  Link is wearing no mask on his face."^
  -F^
@@ -83,11 +81,6 @@ zs %SAVE_FILE%^
  -i 12 2 "Have...TWO powder kegs!  Though the max is still 1. :("^
  -i 13 0^
  -i 0 1 -i 2 1 -i 3 1 -i 4 1 -i 5 1 -i 11 1 -i 14 1 -i 15 1 -i 16 1 -i 17 1^
- -i 18 1 -i 19 1 -i 20 1 -i 21 1 -i 22 1 -i 23 1^
- ^
- "-~" 2^
- "-@" 2^
- -N 0x0B0B0B0B0B0B0B0B "File 2's name:  BBBBBBBB"^
- "-^" 0 "swaps File 2 with File 1"
+ -i 18 1 -i 19 1 -i 20 1 -i 21 1 -i 22 1 -i 23 1
 
 pause
