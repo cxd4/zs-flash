@@ -38,6 +38,7 @@ extern int magic_points(int optc, char ** optv); /* magic_max, magic_now */
 extern int lupy_count(int optc, char ** optv);
 extern int long_sword_hp(int optc, char ** optv);
 extern int memory_warp_point(int optc, char ** optv);
+extern int equip_item(int optc, char ** optv);
 extern int item_register(int optc, char ** optv);
 extern int item_count(int optc, char ** optv);
 extern int non_equip_register(int optc, char ** optv);

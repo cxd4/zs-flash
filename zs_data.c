@@ -340,6 +340,17 @@ int memory_warp_point(int optc, char ** optv)
     return send16(file_offset, input);
 }
 
+int equip_item(int optc, char ** optv)
+{
+    unsigned long input;
+    const size_t file_offset = 0x00006C;
+
+    if (optc < 2)
+        return show16("memory_warp_point", file_offset);
+    input = strtoul(optv[1], NULL, 16);
+    return send16(file_offset, input);
+}
+
 int item_register(int optc, char ** optv)
 {
     u8 inv[INVENTORY_TABLE_HEIGHT][INVENTORY_TABLE_WIDTH];
@@ -812,6 +823,7 @@ void init_options(void)
         opt_table[i] = reserved;
 
     opt_table['D'] = totalday; /* current day number, preferably from 1 to 4 */
+    opt_table['E'] = equip_item; /* current sword and shield equipment */
     opt_table['F'] = bell_flag; /* enables/disables Tatl */
     opt_table['I'] = item_register; /* Item and Mask Subscreen mappings */
     opt_table['L'] = life_energy_points; /* current H.P. out of max H.P. */
