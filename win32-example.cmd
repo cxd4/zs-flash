@@ -29,6 +29,7 @@ zs %SAVE_FILE%^
  -Fairy 0^
  -Name^
  -Name 0x0A0A0A0A0A0A0A0A "File 1's name:  AAAAAAAA"^
+ -ClockTownReached 1^
  -Day^
  -Day 2 "Read the GitHub wiki if you want to know what this does. :)"^
  -zeldaTime^

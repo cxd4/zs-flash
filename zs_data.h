@@ -27,6 +27,7 @@ extern unsigned int swap_mask;
 extern u8 * file;
 
 extern int player_mask(int optc, char ** optv);
+extern int opening_flag(int optc, char ** optv);
 extern int zelda_time(int optc, char ** optv);
 extern int change_zelda_time(int optc, char ** optv);
 extern int totalday(int optc, char ** optv);

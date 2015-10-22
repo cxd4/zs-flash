@@ -201,6 +201,17 @@ int player_mask(int optc, char ** optv)
     return send8(file_offset, input);
 }
 
+int opening_flag(int optc, char ** optv)
+{
+    signed long input;
+    const size_t file_offset = 0x000005;
+
+    if (optc < 2)
+        return show8("opening_flag", file_offset);
+    input = strtol(optv[1], NULL, 0);
+    return sendx8(file_offset, input);
+}
+
 int zelda_time(int optc, char ** optv)
 {
     unsigned long input;
@@ -822,6 +833,7 @@ void init_options(void)
     for (i = 0; i < limit; i++)
         opt_table[i] = reserved;
 
+    opt_table['C'] = opening_flag; /* Game loads up in Clock Town? */
     opt_table['D'] = totalday; /* current day number, preferably from 1 to 4 */
     opt_table['E'] = equip_item; /* current sword and shield equipment */
     opt_table['F'] = bell_flag; /* enables/disables Tatl */
