@@ -4,7 +4,7 @@ TITLE Windows Command Shell:  Zelda Majora's Mask
 REM NOTE:  This is an example shell script to run ZS.EXE on Windows with a
 REM        successful set of parameters for hacking the save file.
 
-SET SAVE_FILE="%USERPROFILE%\emulators\N64\Save\ZELDA MAJORA'S MASK.fla"
+SET SAVE_FILE="%USERPROFILE%\project64\Bin\Release64\Save\ZELDAM~1.FLA"
 REM NOTE:  Adjust this as needed, to where your save file is.
 
 REM NOTE:  `^` is a special character to the Windows shell for absorbing the
