@@ -28,7 +28,7 @@ zs %SAVE_FILE%^
  -Fairy^
  -Fairy 0^
  -Name^
- -Name 0x0A0A0A0A0A0A0A0A "File 1's name:  AAAAAAAA"^
+ -Name 0x0A0B0C0D0E0F1011 "File 1's name:  ABCDEFGH"^
  -ClockTownReached 1^
  -Day^
  -Day 2 "Read the GitHub wiki if you want to know what this does. :)"^
