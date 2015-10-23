@@ -351,6 +351,26 @@ int memory_warp_point(int optc, char ** optv)
     return send16(file_offset, input);
 }
 
+int register_item(int optc, char ** optv)
+{
+    unsigned long input;
+    unsigned int slot_offset;
+    const size_t file_offset = 0x00004C;
+
+    if (optc < 2)
+        return ERR_INTEGER_COUNT_INSUFFICIENT;
+    input = strtoul(optv[1], NULL, 0);
+
+    if (input > 0xF)
+        return ERR_INTEGER_TOO_LARGE;
+    slot_offset = (unsigned int)input;
+
+    if (optc < 3)
+        return show8("register_item", file_offset + slot_offset);
+    input = strtoul(optv[2], NULL, 16);
+    return send8(file_offset + slot_offset, input);
+}
+
 int equip_item(int optc, char ** optv)
 {
     unsigned long input;
@@ -846,6 +866,7 @@ void init_options(void)
     opt_table['Z'] = change_zelda_time; /* (time_rate + 3) time acceleration */
 
     opt_table['d'] = key_compass_map; /* boss key and dungeon map and compass */
+    opt_table['e'] = register_item; /* C- and B-button icon equipment */
     opt_table['f'] = orange_fairy; /* stray fairies collected per region */
     opt_table['i'] = item_count; /* inventory counts (generally ammo) */
     opt_table['k'] = key_register; /* small keys per temple */
