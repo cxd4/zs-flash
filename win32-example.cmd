@@ -57,8 +57,8 @@ zs %SAVE_FILE%^
  -playAsForm 4 "Change this to 0 for Fierce Deity Link.  Again, RTFM on wiki."^
  -LifeHP(current) 1 0x140^
  -LifeHP(maximal) 0 0x140^
- -MagicNow 1 0^
- -MagicMax 0 +127^
+ -MagicNow 1 112^
+ -MagicMax 0 +96^
  -M 1^
  -M 0^
  -owlStatues 1000001111111111^
