@@ -311,7 +311,7 @@ int magic_points(int optc, char ** optv)
     Boolean = (input != 0) ? 1 : 0;
     if (optc < 3)
         return show8(
-            Boolean ? "magic_now" : "magix_max",
+            Boolean ? "magic_now" : "magic_max",
             file_offset + Boolean
         );
     input = strtol(optv[2], NULL, 0);
