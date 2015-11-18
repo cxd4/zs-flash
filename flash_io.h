@@ -44,59 +44,64 @@
 #include <stdint.h>
 #endif
 
+#include <limits.h>
+
 /*
- * smallest C data type that is greater than or equal to 8 bits
- *
- * After the 1989 ISO ratification, only `char` can possibly be 8-bit.
+ * fread() and fwrite() converting 9-bit chars into 8-bit MIPS byte arrays...
+ * Sounds interesting but unfortunately like something I have no way to test.
  */
+#if (CHAR_BIT != 8) || (UCHAR_MAX != 0xFFu)
+#error Non-POSIX char sizes will screw the file system access up.
+#endif
+
 typedef signed char             s8;
 typedef unsigned char           u8;
 
 /*
  * smallest C data type that is greater than or equal to 16 bits
- *
- * After the 1989 ISO ratification, only `short` and `char` are
- * possibilities.  (Very rarely should `char` be a 16-bit type, though.)
- * Obviously, `int` is also always greater than or equal to 16 bits,
- * but sizeof(int) >= sizeof(short), when `short` already had that guarantee.
  */
+#if (SHRT_MIN >= -32767 || SHRT_MAX < +32767 || USHRT_MAX < 0xFFFFu)
+#error Non-ANSI-compliant (short) data type.
+#else
 typedef signed short            s16;
 typedef unsigned short          u16;
+#endif
 
 /*
  * smallest C data type that is greater than or equal to 32 bits
- *
- * `short` could be 32 bits long, but then we would lack 8- or 16-bit types.
- * It's better to avoid using `long` if we know that `int` already works.
  */
-#if (0xFFFFFFFFL < 0xFFFFFFFFUL)
-typedef signed long             s32;
-typedef unsigned long           u32;
-#else
+#if (SHRT_MIN < -2147483647 && SHRT_MAX >= +2147483647)
+typedef signed short            s32;
+typedef unsigned short          u32;
+#elif (INT_MIN < -2147483647 && INT_MAX >= +2147483647)
 typedef signed int              s32;
 typedef unsigned int            u32;
+#else
+typedef signed long             s32;
+typedef unsigned long           u32;
 #endif
 
 /*
  * smallest C data type that is greater than or equal to 64 bits
- *
- * If `long` is not at least a 64-bit type, then there probably is no native
- * LP64 64-bit type on the hardware anyway, so any C99 extension to achieve
- * it would only be virtual, not direct.  However, the RCP's 64-bit access to
- * flash RAM does tempt the possible inclusion of even such a bypass.
  */
-#if (0x00000000FFFFFFFFUL < ~0UL) && defined(__LP64__)
+#if (SHRT_MIN < -9223372036854775807 && SHRT_MAX >= +9223372036854775807)
+typedef signed short            s64;
+typedef unsigned short          u64;
+#elif (INT_MIN < -9223372036854775807 && INT_MAX >= +9223372036854775807)
+typedef signed int              s64;
+typedef unsigned int            u64;
+#elif (LONG_MIN < -9223372036854775807 && LONG_MAX >= +9223372036854775807)
 typedef signed long             s64;
 typedef unsigned long           u64;
-#elif defined(_STDINT_H)
-typedef int64_t                 s64;
-typedef uint64_t                u64;
-#elif defined(_MSC_VER) /* Microsoft's own LLP64 in defense of their WINAPI */
+#elif defined(INT_LEAST64_MIN) || defined(INT_LEAST64_MAX)
+typedef int_least64_t           s64;
+typedef uint_least64_t          u64; /* POSIX's stdint.h, adopted in ISO C99 */
+#elif defined(_MSC_VER)
 typedef signed __int64          s64;
-typedef unsigned __int64        u64;
-#else /* fallback to assume C99 support if no physical 64-bit size exists */
+typedef unsigned __int64        u64; /* Microsoft-specific LLP64 ABI rules */
+#else
 typedef signed long long        s64;
-typedef unsigned long long      u64;
+typedef unsigned long long      u64; /* fallback to require C99 support */
 #endif
 
 /*
