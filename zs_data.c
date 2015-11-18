@@ -812,6 +812,7 @@ int reserved(int optc, char ** optv)
 
 int opt_execute(char ** optv)
 {
+    size_t option_ID;
     int error_signal;
     int optc;
 
@@ -838,7 +839,8 @@ int opt_execute(char ** optv)
         ++optc;
     }
 
-    error_signal = opt_table[optv[0][1]](optc, optv);
+    option_ID = (optv[0][1] < 0) ? 0 : (size_t)optv[0][1];
+    error_signal = opt_table[option_ID](optc, optv);
     if (error_signal != ERR_NONE)
         my_error(error_signal);
     return (optc);
