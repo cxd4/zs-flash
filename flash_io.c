@@ -131,28 +131,17 @@ long load_flash(const char * filename)
 
     for (bytes_read = 0; bytes_read < FLASH_SIZE; bytes_read += BLOCK_SIZE)
     {
-        u8 block_buf[8];
-        u64 block;
         size_t elements_read;
 
-        elements_read = fread(&block_buf[0], 8 * sizeof(u8), 1, stream);
-        if (elements_read != 1)
-        {
+        elements_read = fread(
+            &flash_RAM[bytes_read],
+            sizeof(u8), BLOCK_SIZE,
+            stream
+        );
+        if (elements_read != BLOCK_SIZE) {
             my_error(ERR_DISK_READ_FAILURE);
-            return (bytes_read);
+            return (bytes_read + elements_read);
         }
-
-        block =
-            ((u64)block_buf[0] << 56)
-          | ((u64)block_buf[1] << 48)
-          | ((u64)block_buf[2] << 40)
-          | ((u64)block_buf[3] << 32)
-          | ((u64)block_buf[4] << 24)
-          | ((u64)block_buf[5] << 16)
-          | ((u64)block_buf[6] <<  8)
-          | ((u64)block_buf[7] <<  0)
-        ;
-        write64(&flash_RAM[bytes_read], block);
     }
 
     while (fclose(stream) != 0)
@@ -178,14 +167,12 @@ long save_flash(const char * filename)
 
         elements_written = fwrite(
             &flash_RAM[bytes_sent],
-            8 * sizeof(u8),
-            1,
+            sizeof(u8), BLOCK_SIZE,
             stream
         );
-        if (elements_written != 1)
-        {
+        if (elements_written != BLOCK_SIZE) {
             my_error(ERR_DISK_WRITE_FAILURE);
-            return (bytes_sent);
+            return (bytes_sent + elements_written);
         }
     }
 
