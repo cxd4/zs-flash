@@ -40,7 +40,7 @@ int file_erase(int optc, char ** optv)
     if (skip_warn)
         if (strcmp(optv[1], "NOCONFIRM") == 0)
             goto skip_confirmation;
-    printf("Erasing game data at %p.  Continue?  ", file - flash_RAM);
+    printf("Erasing game data at %p.  Continue?  ", file);
     response = getchar();
     if (response % 2 == 0)
         return ERR_NONE;
