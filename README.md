@@ -11,4 +11,4 @@ cd zs-flash/
 ./make.sh
 ```
 
-If compiling and linking on a Windows operating system, the provided `make_w64.cmd` is the recommended way of building clean, small binaries that should work out of the box on every version after Windows XP 64-bit using the old `msvcrt.dll`.  Simply double-clicking this batch script should build right away on Windows, provided that the Microsoft (WDK)[https://www.microsoft.com/en-us/download/confirmation.aspx?id=11800} is installed from the ISO archive contents.
+If compiling and linking on a Windows operating system, the provided `make_w64.cmd` is the recommended way of building clean, small binaries that should work out of the box on every version since Windows XP 64-bit using the old `msvcrt.dll`.  Simply double-clicking this batch script should build right away on Windows, provided that the Microsoft (WDK)[https://www.microsoft.com/en-us/download/confirmation.aspx?id=11800} is installed from the ISO archive contents.
