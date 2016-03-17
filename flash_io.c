@@ -125,8 +125,7 @@ long load_flash(const char * filename)
         return (bytes_read = 0);
     }
 
-    for (bytes_read = 0; bytes_read < FLASH_SIZE; bytes_read += BLOCK_SIZE)
-    {
+    for (bytes_read = 0; bytes_read < FLASH_SIZE; bytes_read += BLOCK_SIZE) {
         size_t elements_read;
 
         elements_read = fread(
