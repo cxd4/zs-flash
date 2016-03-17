@@ -308,8 +308,8 @@ unsigned int get_client_swap_mask(void)
     block <<= 32;
     block  |= 0x89ABCDEFUL;
     memcpy(&result.bytes[0], &block, sizeof(i64));
-    result.words[0] =
-        ((u32)result.bytes[0] << 24)
+    result.words[0] = 0x00000000
+      | ((u32)result.bytes[0] << 24)
       | ((u32)result.bytes[1] << 16)
       | ((u32)result.bytes[2] <<  8)
       | ((u32)result.bytes[3] <<  0)
