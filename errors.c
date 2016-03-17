@@ -39,6 +39,6 @@ void my_error(const int key)
 
     fputs(errors[code], stderr);
     fputc('\n', stderr);
-    fgetc(stdin); /* pausing for better notification */
+    getchar(); /* pausing for better notification */
     return;
 }
