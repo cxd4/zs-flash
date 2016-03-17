@@ -1,4 +1,3 @@
-#include <memory.h>
 #include <stdio.h>
 #include <string.h>
 #include "flash_io.h"
