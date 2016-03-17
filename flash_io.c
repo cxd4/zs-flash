@@ -75,10 +75,8 @@ void write8(void * dst, const u8 src)
 void write16(void * dst, const u16 src)
 {
     u8 * addr;
-    const u16 src_mask_hi = (src & 0xFF00u) >>  8;
-    const u16 src_mask_lo = (src & 0x00FFu) >>  0;
-    const u8 src_hi = (u8)(src_mask_hi & 0x00FFu);
-    const u8 src_lo = (u8)(src_mask_lo & 0x00FFu);
+    const u8 src_hi = (u8)((src & 0xFF00u) >> 8);
+    const u8 src_lo = (u8)((src & 0x00FFu) >> 0);
 
     addr = (u8 *)dst;
     write8(addr + 0, src_hi);
@@ -89,10 +87,8 @@ void write16(void * dst, const u16 src)
 void write32(void * dst, const u32 src)
 {
     u8 * addr;
-    const u32 src_mask_hi = (src & 0xFFFF0000ul) >> 16;
-    const u32 src_mask_lo = (src & 0x0000FFFFul) >>  0;
-    const u16 src_hi = (u16)(src_mask_hi & 0x0000FFFFu);
-    const u16 src_lo = (u16)(src_mask_lo & 0x0000FFFFu);
+    const u16 src_hi = (u16)((src & 0xFFFF0000ul) >> 16);
+    const u16 src_lo = (u16)((src & 0x0000FFFFul) >>  0);
 
     addr = (u8 *)dst;
     write16(addr + 0, src_hi);
@@ -103,10 +99,8 @@ void write32(void * dst, const u32 src)
 void write64(void * dst, const u64 src)
 {
     u8 * addr;
-    const u64 src_mask_lo = (src & 0x00000000FFFFFFFFul) >>  0;
-    const u64 src_mask_hi = (src ^ src_mask_lo         ) >> 32;
-    const u32 src_hi      = (u32)(src_mask_hi & 0x00000000FFFFFFFFul);
-    const u32 src_lo      = (u32)(src_mask_lo & 0x00000000FFFFFFFFul);
+    const u32 src_hi = (u32)((src >> 32) & 0x00000000FFFFFFFFul);
+    const u32 src_lo = (u32)((src & 0x00000000FFFFFFFFul) >>  0);
 
     addr = (u8 *)dst;
     write32(addr + 0, src_hi);
