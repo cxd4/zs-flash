@@ -80,8 +80,8 @@ fixrand: /* The Bombers' password can't use any digit more than once. */
     write16(file + 0x000C, 0x3FFF); /* approximately 8 AM */
 
     write8 (file + 0x0020, 4); /* normal Link, without transformation */
-    write16(file + 0x0034, 3 * HEART_HP); write16(file + 0x0036, 3 * HEART_HP);
-    write8 (file + 0x0038, 0); write8 (file + 0x0039, 48); /* 48/0 MP??? */
+    write32(file + 0x0034, 3*HEART_HP + 256*3*HEART_HP); /* 3/3 hearts */
+    write16(file + 0x0038, 48 + 256*0); /* 48/0 MP??? */
 
     write8 (file + 0x0044, 0xFF); /* "first_memory" wtf is this */
     write8 (file + 0x0048, 0xFF); /* "last_warp_point" wtf is this */
@@ -91,12 +91,11 @@ fixrand: /* The Bombers' password can't use any digit more than once. */
         write32(file + i, 0x4DFFFFFF);
     write32(file + 0x0058, 0xFFFFFFFDul);
 
-    write32(file + 0x005C, 0xFFFFFF00ul);
-    for (i = 0x005C + 4; i < 0x006C; i += 4)
-        write32(file + i, 0xFFFFFFFFul);
-
     filled_doubleword = 0ul;
     filled_doubleword = ~(filled_doubleword);
+    write64(file + 0x005C, filled_doubleword);
+    write64(file + 0x0064, filled_doubleword);
+    write8 (file + 0x005C + 0x0003, 0x00);
 
     if (toupper(optv[1][0]) == 'K')
         goto skip_inventory_reset;
@@ -105,13 +104,11 @@ fixrand: /* The Bombers' password can't use any digit more than once. */
         write64(file + i, filled_doubleword);
     for (i = 0x00A0; i < 0x00B8; i += 8)
         write64(file + i, 0);
-    write32(file + 0x00B8, 0x00120000);
-    write32(file + 0x00BC, 0x00000000);
+    write64(file + 0x00B8, (u64)(0x00120000) << 32);
 skip_inventory_reset:
 
-    for (i = 0x00CA; i < 0x00D4 - 1; i++)
-        write8(file + i, 0xFF); /* -1 small keys for 9/10 dungeons...uh, why? */
-    write8(file + i, 0x00); /* 0 keys for the 10th...must be a bug in ROM */
+    write64(file + 0x00CA, filled_doubleword); /* -1 small keys for 8 temples */
+    write16(file + 0x00D2, 0xFF00u); /* ...well, 9 "temples" + 1 bug in ROM */
 
  /* "degnuts_memory_name" -- appears to always store 3 copies of player_name */
     filled_doubleword = read64(file + 0x002C);
@@ -119,19 +116,22 @@ skip_inventory_reset:
         write64(file + i, filled_doubleword);
 
  /* unnamed giant heap of data in the file--no clue what goes on here */
-    write32(file + 0x0E6C, 0x1D4C);
-    write32(file + 0x0E70, 0x1D4C);
+    filled_doubleword = 0x00001D4Cu;
+    filled_doubleword = (filled_doubleword << 32) | filled_doubleword;
+    write64(file + 0x0E6C, filled_doubleword);
     write32(file + 0x0E74, 0x1DB0);
-    write16(file + 0x0EE8, 0x13);
-    write16(file + 0x0EEA, 0x0A);
-    write16(file + 0x0EEE, 0x00001770);
+    write32(file + 0x0EE8, 0x0013000A);
+    write16(file + 0x0EEE, 0x1770);
     write32(file + 0x0EF4, 0x000A0027);
 
     write16(file + 0x1000, 0x0035); /* "spot_no":  same WTF as scene_data_ID */
-    write16(file + 0x1002, 0xFA74); /* Epona's x-coordinate */
-    write16(file + 0x1004, 0x0101); /* Epona's y-coordinate */
-    write16(file + 0x1006, 0xFAFB); /* Epona's z-coordinate */
-    write16(file + 0x1008, 0x2AAC); /* "horse_a" wtf is this. */
+    filled_doubleword = 0x0000000000000000
+      | (u64)(0xFA74u) << 48 /* Epona's x-coordinate */
+      | (u64)(0x0101u) << 32 /* Epona's y-coordinate */
+      | (u64)(0xFAFBu) << 16 /* Epona's z-coordinate */
+      | (u64)(0x2AACu) <<  0 /* "horse_a" */
+    ;
+    write64(file + 0x1002, filled_doubleword);
     return ERR_NONE;
 }
 int file_swap(int optc, char ** optv)
