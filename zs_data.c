@@ -387,6 +387,9 @@ int item_register(int optc, char ** optv)
     size_t file_offset;
     unsigned long input, x, y;
     int subscreen_type;
+    static const char* inventory_types[] = {
+        "items", "masks"
+    };
 
     if (optc < 2)
         return ERR_INTEGER_COUNT_INSUFFICIENT;
@@ -400,19 +403,15 @@ int item_register(int optc, char ** optv)
 
     if (optc < 3 + 1 + 1) { /* argv < "-I (string) (x) (y) (ITEM_ID)" */
         printf(
-            "%s (%s):\n"\
-            "\t%02X %02X %02X %02X %02X %02X\n"\
-            "\t%02X %02X %02X %02X %02X %02X\n"\
-            "\t%02X %02X %02X %02X %02X %02X\n"\
-            "\t%02X %02X %02X %02X %02X %02X\n",
-
-            "item_register",
-            (subscreen_type == 'M') ? "masks" : "items",
-            inv[0][0], inv[0][1], inv[0][2], inv[0][3], inv[0][4], inv[0][5],
-            inv[1][0], inv[1][1], inv[1][2], inv[1][3], inv[1][4], inv[1][5],
-            inv[2][0], inv[2][1], inv[2][2], inv[2][3], inv[2][4], inv[2][5],
-            inv[3][0], inv[3][1], inv[3][2], inv[3][3], inv[3][4], inv[3][5]
+            "%s (%s):\n",
+            "item_register", inventory_types[(subscreen_type == 'M') ? 1 : 0]
         );
+        for (y = 0; y < INVENTORY_TABLE_HEIGHT; y++) {
+            putchar('\t');
+            for (x = 0; x < INVENTORY_TABLE_WIDTH; x++)
+                printf("%02X ", inv[y][x]);
+            putchar('\n');
+	};
         return ERR_NONE;
     }
     x = strtoul(optv[2], NULL, 0);
