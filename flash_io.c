@@ -242,48 +242,40 @@ swap_memory:
         for (i = 0; i < FLASH_SIZE; i += 2) {
             for (j = 0; j < 2; j++)
                 RCP.bytes[j] = read8(&flash_RAM[i + j]);
-            write8(&flash_RAM[i + 0], RCP.bytes[0 ^ 1]);
-            write8(&flash_RAM[i + 1], RCP.bytes[1 ^ 1]);
+            for (j = 0; j < 2; j++)
+                write8(&flash_RAM[i + j], RCP.bytes[j ^ 1]);
         }
         break;
     case 2:
         for (i = 0; i < FLASH_SIZE; i += 4) {
             for (j = 0; j < 2; j++)
                 RCP.halfwords[j] = read16(&flash_RAM[i + 2*j]);
-            write16(&flash_RAM[i + 0], RCP.halfwords[0 ^ 2/2]);
-            write16(&flash_RAM[i + 2], RCP.halfwords[1 ^ 2/2]);
+            for (j = 0; j < 2; j++)
+                write16(&flash_RAM[i + 2*j], RCP.halfwords[j ^ 2/2]);
         }
         break;
     case 3:
         for (i = 0; i < FLASH_SIZE; i += 4) {
             for (j = 0; j < 4; j++)
                 RCP.bytes[j] = read8(&flash_RAM[i + j]);
-            write8(&flash_RAM[i + 0], RCP.bytes[0 ^ 3]);
-            write8(&flash_RAM[i + 1], RCP.bytes[1 ^ 3]);
-            write8(&flash_RAM[i + 2], RCP.bytes[2 ^ 3]);
-            write8(&flash_RAM[i + 3], RCP.bytes[3 ^ 3]);
+            for (j = 0; j < 4; j++)
+                write8(&flash_RAM[i + j], RCP.bytes[j ^ 3]);
         }
         break;
     case 4:
         for (i = 0; i < FLASH_SIZE; i += 8) {
             for (j = 0; j < 2; j++)
                 RCP.words[j] = read32(&flash_RAM[i + 4*j]);
-            write32(&flash_RAM[i + 0], RCP.words[0 ^ 4/4]);
-            write32(&flash_RAM[i + 4], RCP.words[1 ^ 4/4]);
+            for (j = 0; j < 2; j++)
+                write32(&flash_RAM[i + 4*j], RCP.words[j ^ 4/4]);
         }
         break;
     case 7:
         for (i = 0; i < FLASH_SIZE; i += 8) {
             for (j = 0; j < 8; j++)
                 RCP.bytes[j] = read8(&flash_RAM[i + j]);
-            write8(&flash_RAM[i + 0], RCP.bytes[0 ^ 7]);
-            write8(&flash_RAM[i + 1], RCP.bytes[1 ^ 7]);
-            write8(&flash_RAM[i + 2], RCP.bytes[2 ^ 7]);
-            write8(&flash_RAM[i + 3], RCP.bytes[3 ^ 7]);
-            write8(&flash_RAM[i + 4], RCP.bytes[4 ^ 7]);
-            write8(&flash_RAM[i + 5], RCP.bytes[5 ^ 7]);
-            write8(&flash_RAM[i + 6], RCP.bytes[6 ^ 7]);
-            write8(&flash_RAM[i + 7], RCP.bytes[7 ^ 7]);
+            for (j = 0; j < 8; j++)
+                write8(&flash_RAM[i + j], RCP.bytes[j ^ 7]);
         }
         break;
     }
