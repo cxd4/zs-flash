@@ -167,6 +167,17 @@ long save_flash(const char * filename)
     return (bytes_sent);
 }
 
+static const char* endian_types[] = {
+    "hardware-accurate",
+    "16-bit byte swapped",
+    "32-bit halfword-swapped",
+    "32-bit byte-swapped",
+
+    "64-bit word-swapped",
+    "mixed-endian",
+    "64-bit halfword-swapped",
+    "64-bit byte-swapped",
+};
 unsigned int swap_flash(unsigned int interval)
 {
     u64 block;
@@ -194,7 +205,7 @@ unsigned int swap_flash(unsigned int interval)
     } while (i < FLASH_SIZE);
     if (i >= FLASH_SIZE) { /* overflow from searching an empty file */
         mask = get_client_swap_mask();
-        fprintf(stdout, "Detected %s data.", "completely blank game");
+        printf("Detected %s data.", "completely blank game");
         goto swap_memory;
     }
 
@@ -203,35 +214,30 @@ unsigned int swap_flash(unsigned int interval)
     switch (words[0]) {
     case /* 'ZELD' */0x5A454C44:
         mask = 0;
-        fprintf(stdout, "Detected %s data.", "hardware-accurate");
         break;
     case /* 'EZDL' */0x455A444C:
         mask = 1;
-        fprintf(stdout, "Detected %s data.", "16-bit byte-swapped");
         break;
     case /* 'LDZE' */0x4C445A45:
         mask = 2;
-        fprintf(stdout, "Detected %s data.", "32-bit halfword-swapped");
         break;
     case /* 'DLEZ' */0x444C455A:
         mask = 3;
-        fprintf(stdout, "Detected %s data.", "32-bit byte-swapped");
         break;
     default:
         switch (words[1]) {
         case /* 'ZELD' */0x5A454C44:
             mask = 4;
-            fprintf(stdout, "Detected %s data.", "64-bit word-swapped");
             break;
         case /* 'DLEZ' */0x444C455A:
             mask = 7;
-            fprintf(stdout, "Detected %s data.", "64-bit byte-swapped");
             break;
         default:
             fprintf(stderr, "Flash formatting damaged or unsupported.\n");
             return (mask = ~0u);
         }
     }
+    printf("Detected %s data.", endian_types[mask % 8]);
 
 swap_memory:
     switch (mask) {
