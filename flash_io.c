@@ -27,9 +27,8 @@ u16 read16(const void * address)
     u16 halfword; /* MIPS and from the game's point of view */
 
     addr = (const u8 *)address;
-    halfword  = (u16)read8(addr + 0) & 0x00FFu;
-    halfword  = (halfword << 8) & 0xFF00u;
-    halfword |= (u16)read8(addr + 1) & 0x00FFu;
+    halfword  = (u16)read8(addr + 0) << 8;
+    halfword |= (u16)read8(addr + 1) << 0;
     return (halfword & 0x000000000000FFFFu);
 }
 
@@ -39,9 +38,8 @@ u32 read32(const void * address)
     u32 word; /* MIPS and from the game's point of view */
 
     addr = (const u8 *)address;
-    word  = (u32)read16(addr + 0) & 0xFFFFu;
-    word  = (word << 16) & 0xFFFF0000ul;
-    word |= (u32)read16(addr + 2) & 0xFFFFu;
+    word  = (u32)read16(addr + 0) << 16;
+    word |= (u32)read16(addr + 2) <<  0;
     return (word & 0x00000000FFFFFFFFul);
 }
 
@@ -51,9 +49,8 @@ u64 read64(const void * address)
     u64 doubleword;
 
     addr = (const u8 *)address;
-    doubleword  = (u64)read32(addr + 0) & 0x00000000FFFFFFFFul;
-    doubleword  = doubleword << 32;
-    doubleword |= (u64)read32(addr + 4) & 0x00000000FFFFFFFFul;
+    doubleword  = (u64)read32(addr + 0) << 32;
+    doubleword |= (u64)read32(addr + 4) <<  0;
     return (doubleword);
 }
 
