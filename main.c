@@ -11,8 +11,7 @@ int main(int argc, char ** argv)
     unsigned int section_ID;
     register int i;
 
-    if (argc < 2)
-    {
+    if (argc < 2) {
         my_error(ERR_FLASHRAM_LOCATION_UNKNOWN);
         return ERR_FLASHRAM_LOCATION_UNKNOWN;
     }
