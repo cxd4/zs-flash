@@ -13,8 +13,7 @@ u8 read8(const void * address)
 
     min_addr = &flash_RAM[FLASH_MIN_ADDR];
     max_addr = &flash_RAM[FLASH_MAX_ADDR];
-    if (address < min_addr || address > max_addr)
-    {
+    if (address < min_addr || address > max_addr) {
         my_error(ERR_RD_FLASH_ACCESS_VIOLATION);
         return 0x00u; /* N64 RCP reads 0 from un-mapped DRAM. */
     }
@@ -65,8 +64,7 @@ void write8(void * dst, const u8 src)
 
     min_addr = &flash_RAM[FLASH_MIN_ADDR];
     max_addr = &flash_RAM[FLASH_MAX_ADDR];
-    if (dst < min_addr || dst > max_addr)
-    {
+    if (dst < min_addr || dst > max_addr) {
         my_error(ERR_WR_FLASH_ACCESS_VIOLATION);
         return; /* N64 RCP writes nothing to un-mapped memory. */
     }
@@ -122,8 +120,7 @@ long load_flash(const char * filename)
     long bytes_read;
 
     stream = fopen(filename, "rb");
-    if (stream == NULL)
-    {
+    if (stream == NULL) {
         my_error(ERR_FILE_STREAM_NO_LINK);
         return (bytes_read = 0);
     }
@@ -155,14 +152,12 @@ long save_flash(const char * filename)
     long bytes_sent;
 
     stream = fopen(filename, "wb");
-    if (stream == NULL)
-    {
+    if (stream == NULL) {
         my_error(ERR_FILE_STREAM_NO_LINK);
         return (bytes_sent = 0);
     }
 
-    for (bytes_sent = 0; bytes_sent < FLASH_SIZE; bytes_sent += BLOCK_SIZE)
-    {
+    for (bytes_sent = 0; bytes_sent < FLASH_SIZE; bytes_sent += BLOCK_SIZE) {
         size_t elements_written;
 
         elements_written = fwrite(
@@ -191,8 +186,7 @@ unsigned int swap_flash(unsigned int interval)
     unsigned int mask;
     register size_t i, j;
 
-    if (interval != 0)
-    { /* callee-defined endian swap on a fixed interval */
+    if (interval != 0) { /* callee-defined endian swap on a fixed interval */
         mask = interval - 1; /* e.g. (interval = 4) for a 32-bit swap */
         goto swap_memory;
     }
@@ -208,8 +202,7 @@ unsigned int swap_flash(unsigned int interval)
             break;
         i += FILE_SIZE;
     } while (i < FLASH_SIZE);
-    if (i >= FLASH_SIZE) /* overflow from searching an empty file */
-    {
+    if (i >= FLASH_SIZE) { /* overflow from searching an empty file */
         mask = get_client_swap_mask();
         fprintf(stdout, "Detected %s data.", "completely blank game");
         goto swap_memory;
@@ -217,8 +210,7 @@ unsigned int swap_flash(unsigned int interval)
 
     words[0] = (u32)(block & 0x00000000FFFFFFFFul);
     words[1] = (u32)(block >> 32);
-    switch (words[0])
-    {
+    switch (words[0]) {
     case /* 'ZELD' */0x5A454C44:
         mask = 0;
         fprintf(stdout, "Detected %s data.", "hardware-accurate");
@@ -236,8 +228,7 @@ unsigned int swap_flash(unsigned int interval)
         fprintf(stdout, "Detected %s data.", "32-bit byte-swapped");
         break;
     default:
-        switch (words[1])
-        {
+        switch (words[1]) {
         case /* 'ZELD' */0x5A454C44:
             mask = 4;
             fprintf(stdout, "Detected %s data.", "64-bit word-swapped");
@@ -253,13 +244,11 @@ unsigned int swap_flash(unsigned int interval)
     }
 
 swap_memory:
-    switch (mask)
-    {
+    switch (mask) {
     case 0:
         break; /* Swapping big-endian into big-endian is a null operation. */
     case 1:
-        for (i = 0; i < FLASH_SIZE; i += 2)
-        {
+        for (i = 0; i < FLASH_SIZE; i += 2) {
             for (j = 0; j < 2; j++)
                 block_buf[j] = read8(&flash_RAM[i + j]);
             write8(&flash_RAM[i + 0], block_buf[0 ^ 1]);
@@ -267,8 +256,7 @@ swap_memory:
         }
         break;
     case 2:
-        for (i = 0; i < FLASH_SIZE; i += 4)
-        {
+        for (i = 0; i < FLASH_SIZE; i += 4) {
             for (j = 0; j < 2; j++)
                 halfwords[j] = read16(&flash_RAM[i + 2*j]);
             write16(&flash_RAM[i + 0], halfwords[0 ^ 2/2]);
@@ -276,8 +264,7 @@ swap_memory:
         }
         break;
     case 3:
-        for (i = 0; i < FLASH_SIZE; i += 4)
-        {
+        for (i = 0; i < FLASH_SIZE; i += 4) {
             for (j = 0; j < 4; j++)
                 block_buf[j] = read8(&flash_RAM[i + j]);
             write8(&flash_RAM[i + 0], block_buf[0 ^ 3]);
@@ -287,8 +274,7 @@ swap_memory:
         }
         break;
     case 4:
-        for (i = 0; i < FLASH_SIZE; i += 8)
-        {
+        for (i = 0; i < FLASH_SIZE; i += 8) {
             for (j = 0; j < 2; j++)
                 words[j] = read32(&flash_RAM[i + 4*j]);
             write32(&flash_RAM[i + 0], words[0 ^ 4/4]);
@@ -296,8 +282,7 @@ swap_memory:
         }
         break;
     case 7:
-        for (i = 0; i < FLASH_SIZE; i += 8)
-        {
+        for (i = 0; i < FLASH_SIZE; i += 8) {
             for (j = 0; j < 8; j++)
                 block_buf[j] = read8(&flash_RAM[i + j]);
             write8(&flash_RAM[i + 0], block_buf[0 ^ 7]);
@@ -330,8 +315,7 @@ unsigned int get_client_swap_mask(void)
       | ((u32)result.bytes[2] <<  8)
       | ((u32)result.bytes[3] <<  0)
     ;
-    switch (result.words[0])
-    {
+    switch (result.words[0]) {
     default:  /* fall through */
     case 0x01234567:  return 00;
     case 0x23016745:  return 01;
