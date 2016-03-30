@@ -15,6 +15,17 @@
 /* numbers per lottery ticket */
 #define NUMBERS_PER_TICKET              3
 
+/* Pictograph Box snapshot properties */
+#define CFB_WIDTH                       160u
+#define CFB_HEIGHT                      112u
+#define CFB_BITS_PER_PIXEL              5
+#define CFB_PIXELS                      ((CFB_WIDTH) * (CFB_HEIGHT))
+
+#define BMP_BITS_PER_PIXEL              24
+#define BMP_PIXELS                      ((CFB_PIXELS) * (BMP_BITS_PER_PIXEL)/8)
+#define BMP_SIZE                        (14 + 12 + (BMP_PIXELS))
+#define CFB_SIZE                        ((CFB_PIXELS) * (CFB_BITS_PER_PIXEL)/8)
+
 typedef int(*p_opt)(int optc, char ** argv);
 extern p_opt * opt_table;
 
@@ -49,6 +60,7 @@ extern int key_compass_map(int optc, char ** optv);
 extern int key_register(int optc, char ** optv);
 extern int orange_fairy(int optc, char ** optv);
 extern int numbers_table(int optc, char ** optv);
+extern int picture_frame_buffer(int optc, char ** optv);
 
 extern void init_options(void);
 extern int reserved(int optc, char ** optv);

@@ -559,6 +559,66 @@ int numbers_table(int optc, char ** optv)
     return ERR_NONE;
 }
 
+static const unsigned char bitmap_header[] = {
+    'B', 'M',
+    (u8)((BMP_SIZE >>  0) & 0xFFu), (u8)((BMP_SIZE >>  8) & 0xFFu),
+    (u8)((BMP_SIZE >> 16) & 0xFFu), (u8)((BMP_SIZE >> 24) & 0xFFu),
+    0x00, 0x00, /* reserved */
+    0x00, 0x00, /* reserved */
+    14 + 12, (0 >> 8), (0 >> 16), (0 >> 24), /* pixel map offset */
+
+    12, (0 >> 8), (0 >> 16), (0 >> 24), /* BMP version header size */
+    (CFB_WIDTH  >> 0) & 0xFFu, (CFB_WIDTH  >> 8) & 0xFFu,
+    (CFB_HEIGHT >> 0) & 0xFFu, (CFB_HEIGHT >> 8) & 0xFFu,
+    1, (0x00 >> 8), /* number of color planes = 1 */
+    BMP_BITS_PER_PIXEL, (0 >> 8), /* R8G8B8 24 bits per pixel */
+};
+int picture_frame_buffer(int optc, char ** optv)
+{
+    FILE * BMP_stream;
+    u8 byte, intensity;
+    size_t elements;
+    size_t bit_number, index;
+    register size_t pixel, scanline;
+    register size_t i;
+    const size_t pitch = CFB_WIDTH * CFB_BITS_PER_PIXEL / 8;
+    const size_t file_offset = 0x0010E0;
+
+    if (optc > 1)
+        return ERR_OPTION_NOT_IMPLEMENTED; /* import from BMP file to flash */
+
+    BMP_stream = fopen("picture.bmp", "wb");
+    if (BMP_stream == NULL)
+        return ERR_FILE_STREAM_NO_LINK;
+    elements = fwrite(&bitmap_header[0], 1, sizeof(bitmap_header), BMP_stream);
+
+    for (scanline = 0; scanline < CFB_HEIGHT; scanline++) {
+        index = pitch * (CFB_HEIGHT - 1 - scanline); /* bottom-up */
+        byte = intensity = 0;
+        bit_number = 8 - CFB_BITS_PER_PIXEL;
+        for (pixel = 0; pixel < CFB_WIDTH; pixel++) {
+            byte = read8(&file[file_offset + index]);
+            if (bit_number < CFB_BITS_PER_PIXEL) {
+                intensity  = (byte >> bit_number) * 8;
+                bit_number = (8 + bit_number - CFB_BITS_PER_PIXEL) & 07;
+                ++index;
+            } else {
+                intensity |= byte >> bit_number;
+                intensity &= (1u << CFB_BITS_PER_PIXEL) - 1;
+                bit_number -= CFB_BITS_PER_PIXEL;
+            }
+            for (i = 0; i < BMP_BITS_PER_PIXEL/8; i++)
+                fputc(intensity, BMP_stream);
+	    intensity = 0;
+        }
+    }
+    if (elements != sizeof(bitmap_header) || ferror(BMP_stream))
+        return ERR_DISK_WRITE_FAILURE;
+    if (fclose(BMP_stream) != 0)
+        return ERR_FILE_STREAM_STUCK;
+    return ERR_NONE;
+}
+
 int magic_number_test(unsigned int section_ID)
 {
     const u8 * section;
@@ -884,6 +944,7 @@ void init_options(void)
  */
     opt_table['='] = zs_endian_swap_mask;
     opt_table['@'] = zs_file_pointer;
+    opt_table['+'] = picture_frame_buffer;
 
     opt_table['&'] = file_erase;
     opt_table['|'] = file_new;
