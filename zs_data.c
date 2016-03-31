@@ -576,43 +576,41 @@ static const unsigned char bitmap_header[] = {
 int picture_frame_buffer(int optc, char ** optv)
 {
     FILE * BMP_stream;
-    u8 byte, intensity;
+    u64 forty_bits; /* 40 bits = 5 whole bytes that can store 8 5-bit pixels. */
+    u8 intensity;
     size_t elements;
-    size_t bit_number, index;
+    size_t index;
     register size_t pixel, scanline;
-    register size_t i;
+    register unsigned int i, j;
     const size_t pitch = CFB_WIDTH * CFB_BITS_PER_PIXEL / 8;
     const size_t file_offset = 0x0010E0;
 
-    if (optc > 1)
-        return ERR_OPTION_NOT_IMPLEMENTED; /* import from BMP file to flash */
+    if (optc < 2) { /* Export 5-bit CFB in flash RAM to a BMP file. */
+        BMP_stream = fopen("picture.bmp", "wb");
+        if (BMP_stream == NULL)
+            return ERR_FILE_STREAM_NO_LINK;
+        elements = fwrite(bitmap_header, sizeof(bitmap_header), 1, BMP_stream);
 
-    BMP_stream = fopen("picture.bmp", "wb");
-    if (BMP_stream == NULL)
-        return ERR_FILE_STREAM_NO_LINK;
-    elements = fwrite(&bitmap_header[0], 1, sizeof(bitmap_header), BMP_stream);
-
-    for (scanline = 0; scanline < CFB_HEIGHT; scanline++) {
-        index = pitch * (CFB_HEIGHT - 1 - scanline); /* bottom-up */
-        byte = intensity = 0;
-        bit_number = 8 - CFB_BITS_PER_PIXEL;
-        for (pixel = 0; pixel < CFB_WIDTH; pixel++) {
-            byte = read8(&file[file_offset + index]);
-            if (bit_number < CFB_BITS_PER_PIXEL) {
-                intensity  = (byte >> bit_number) * 8;
-                bit_number = (8 + bit_number - CFB_BITS_PER_PIXEL) & 07;
-                ++index;
-            } else {
-                intensity |= byte >> bit_number;
-                intensity &= (1u << CFB_BITS_PER_PIXEL) - 1;
-                bit_number -= CFB_BITS_PER_PIXEL;
+        for (scanline = 0; scanline < CFB_HEIGHT; scanline++) {
+            index = pitch * (CFB_HEIGHT - 1 - scanline); /* bottom-up */
+            for (pixel = 0; pixel < CFB_WIDTH; pixel += 8) {
+                forty_bits   = read64(&file[file_offset + index]);
+                forty_bits >>= 64 - 8*CFB_BITS_PER_PIXEL; /* 24 low junk bits */
+                for (i = 0; i < 8; i++) {
+                    intensity  = forty_bits >> (7 - i)*CFB_BITS_PER_PIXEL;
+                    intensity &= (1u << CFB_BITS_PER_PIXEL) - 1;
+                    intensity *= 1 << (8 - CFB_BITS_PER_PIXEL);
+                    for (j = 0; j < BMP_BITS_PER_PIXEL/8; j++)
+                        fputc(intensity, BMP_stream);
+                }
+                index += CFB_BITS_PER_PIXEL;
             }
-            for (i = 0; i < BMP_BITS_PER_PIXEL/8; i++)
-                fputc(intensity, BMP_stream);
-	    intensity = 0;
         }
+    } else { /* Import 5-bit CFB to flash RAM from a BMP file. */
+        return ERR_OPTION_NOT_IMPLEMENTED;
     }
-    if (elements != sizeof(bitmap_header) || ferror(BMP_stream))
+
+    if (elements != 1 || ferror(BMP_stream))
         return ERR_DISK_WRITE_FAILURE;
     if (fclose(BMP_stream) != 0)
         return ERR_FILE_STREAM_STUCK;
