@@ -4,6 +4,11 @@ zs
 # compilation output
 obj/
 
+# binary pixel map image formats (when working with Pictograph Box support)
+*.bmp
+*.png
+*.gif
+
 # Compiled Object files
 *.slo
 *.lo
