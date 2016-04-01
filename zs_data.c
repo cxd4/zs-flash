@@ -633,11 +633,18 @@ int magic_number_test(unsigned int section_ID)
 u16 fix_checksum(unsigned int section_ID)
 {
     u8 * section;
-    register size_t i;
-    register u16 checksum, checksum_JAP;
+    int owl_saved;
+    register size_t i, limit;
+    register u16 checksum;
 
     section = &flash_RAM[FILE_SIZE * (section_ID % NUMBER_OF_DATA_FILES)];
     checksum = 0x0000;
+    owl_saved = (read8(section + 0x0023) != 0) ? 1 : 0;
+    limit = (FILE_SIZE / 2) << owl_saved; /* 0x2000 normal, 0x4000 owl saves */
+
+    write16(section + 0x100A, checksum); /* Do not add checksum to itself. */
+    if (!owl_saved) /* No Pictograph Box data stored here; assume JAP offset. */
+        write16(section + 0x138E, checksum);
 
 /*
  * Storing a save file checksum implies we are writing valid save file data,
@@ -646,16 +653,12 @@ u16 fix_checksum(unsigned int section_ID)
     for (i = 0; i < BYTES_IN_MAGIC_NUMBER; i++)
         write8(section + 0x0024 + i, newf[i]);
 
-    for (i = 0; i < 0x100A; i++) /* USA and EUR ROMs access the sum here. */
+    for (i = 0; i < limit; i++)
         checksum += read8(section + i);
-    write16(section + i, checksum);
 
-    checksum_JAP = checksum;
-
-    for (     ; i < 0x138E; i++) /* JAP ROMs access the sum here. */
-        checksum_JAP += read8(section + i);
-    write16(section + i, checksum_JAP);
-
+    write16(section + 0x100A, checksum);
+    if (!owl_saved) /* It could be a JAP ROM, so try to be bi-compatible. */
+        write16(section + 0x138E, checksum);
     return (checksum);
 }
 
