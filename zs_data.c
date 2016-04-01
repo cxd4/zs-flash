@@ -636,7 +636,7 @@ u16 fix_checksum(unsigned int section_ID)
     register size_t i;
     register u16 checksum, checksum_JAP;
 
-    section = &flash_RAM[FILE_SIZE * (section_ID & 0xF)];
+    section = &flash_RAM[FILE_SIZE * (section_ID % NUMBER_OF_DATA_FILES)];
     checksum = 0x0000;
 
 /*

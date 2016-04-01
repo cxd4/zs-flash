@@ -4,7 +4,7 @@
 #define FLASH_MIN_ADDR          0x000000
 #define FLASH_MAX_ADDR          0x01FFFF
 #define FILE_MIN_ADDR           0x000000
-#define FILE_MAX_ADDR           0x001FFF
+#define FILE_MAX_ADDR           0x003FFF
 
 /*
  * RCP has only block-access (64-bit intervals) to the flash RAM.
