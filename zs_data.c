@@ -573,6 +573,7 @@ static const unsigned char bitmap_header[] = {
     1, (0x00 >> 8), /* number of color planes = 1 */
     BMP_BITS_PER_PIXEL, (0 >> 8), /* R8G8B8 24 bits per pixel */
 };
+static unsigned char pixel_array[CFB_PIXELS * BMP_BITS_PER_PIXEL/8];
 int picture_frame_buffer(int optc, char ** optv)
 {
     FILE * BMP_stream;
@@ -606,14 +607,50 @@ int picture_frame_buffer(int optc, char ** optv)
                 index += CFB_BITS_PER_PIXEL;
             }
         }
-    } else { /* Import 5-bit CFB to flash RAM from a BMP file. */
-        return ERR_OPTION_NOT_IMPLEMENTED;
+        if (elements != 1 || ferror(BMP_stream))
+            return ERR_DISK_WRITE_FAILURE;
+        if (fclose(BMP_stream) != 0)
+            return ERR_FILE_STREAM_STUCK;
+        return ERR_NONE;
     }
 
-    if (elements != 1 || ferror(BMP_stream))
-        return ERR_DISK_WRITE_FAILURE;
+ /* Import 5-bit CFB to flash RAM from a BMP file. */
+    BMP_stream = fopen(optv[1], "rb");
+    if (BMP_stream == NULL)
+        return ERR_FILE_STREAM_NO_LINK;
+    elements  = fread(pixel_array, sizeof(bitmap_header), 1, BMP_stream);
+    if (fseek(BMP_stream, (long)pixel_array[10], SEEK_SET) != 0)
+        return ERR_FILE_STREAM_STUCK;
+    elements &= fread(pixel_array, sizeof(pixel_array), 1, BMP_stream);
     if (fclose(BMP_stream) != 0)
         return ERR_FILE_STREAM_STUCK;
+    if (elements != 1)
+        return ERR_DISK_READ_FAILURE;
+
+    for (scanline = 0; scanline < CFB_HEIGHT; scanline++) {
+        index = BMP_BITS_PER_PIXEL/8 * CFB_WIDTH * (CFB_HEIGHT - 1 - scanline);
+        for (pixel = 0; pixel < CFB_WIDTH; pixel += i) {
+            forty_bits = 0x0000000000;
+            for (i = 0; i < 8; i++) {
+                float average = 0;
+                for (j = 0; j < BMP_BITS_PER_PIXEL/8; j++)
+                    average += pixel_array[index + BMP_BITS_PER_PIXEL/8*i + j];
+                average /= BMP_BITS_PER_PIXEL / 8; /* 24-bit RGB:  total /= 3 */
+                average /= 1 << (8 - CFB_BITS_PER_PIXEL); /* I8 / 2^3 = I5 */
+                intensity  = (u8)(average);
+                intensity += (intensity < average) ? 1 : 0; /* rounding */
+
+                if (intensity > (1u << CFB_BITS_PER_PIXEL) - 1u)
+                    intensity = (1u << CFB_BITS_PER_PIXEL) - 1u;
+                forty_bits = (forty_bits << CFB_BITS_PER_PIXEL) | intensity;
+            }
+            write64(
+                &file[file_offset + scanline*pitch + (pixel/8 * CFB_BITS_PER_PIXEL)],
+                forty_bits << 8*(8 - CFB_BITS_PER_PIXEL)
+            );
+            index += i * (BMP_BITS_PER_PIXEL / 8);
+        }
+    }
     return ERR_NONE;
 }
 
