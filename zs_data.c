@@ -681,16 +681,8 @@ u16 fix_checksum(unsigned int section_ID)
     section = &flash_RAM[FILE_SIZE * (section_ID % NUMBER_OF_DATA_FILES)];
     checksum = 0x0000;
 
-    format = 1;
-    for (i = 0; i < FILE_SIZE / 2; i++)
-        if (read8(&section[i]) != read8(&section[0x2000 + i])) {
-            format = 2;
-            break;
-        }
-
-    limit = FILE_SIZE / format;
-    write16(section + 0x100A, checksum); /* Do not add checksum to itself. */
-    write16(section + 0x138E, checksum);
+    format = (read16(&section[0x100A]) != read16(&section[0x300A])) ? 1 : 0;
+    limit = (FILE_SIZE / 2) << format;
 
 /*
  * Storing a save file checksum implies we are writing valid save file data,
@@ -699,6 +691,7 @@ u16 fix_checksum(unsigned int section_ID)
     for (i = 0; i < BYTES_IN_MAGIC_NUMBER; i++)
         write8(section + 0x0024 + i, newf[i]);
 
+    write16(section + 0x100A, checksum); /* Do not add checksum to itself. */
     for (i = 0; i < limit; i++)
         checksum += read8(section + i);
 
