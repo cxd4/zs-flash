@@ -681,14 +681,14 @@ u16 fix_checksum(unsigned int section_ID)
     section = &flash_RAM[FILE_SIZE * (section_ID % NUMBER_OF_DATA_FILES)];
     checksum = 0x0000;
 
-    new_format = 1;
+    format = 1;
     for (i = 0; i < FILE_SIZE / 2; i++)
         if (read8(&section[i]) != read8(&section[0x2000 + i])) {
-            new_format = 2;
+            format = 2;
             break;
         }
 
-    limit = FILE_SIZE / new_format;
+    limit = FILE_SIZE / format;
     write16(section + 0x100A, checksum); /* Do not add checksum to itself. */
     write16(section + 0x138E, checksum);
 
@@ -702,9 +702,10 @@ u16 fix_checksum(unsigned int section_ID)
     for (i = 0; i < limit; i++)
         checksum += read8(section + i);
 
-    write16(section + 0x100A, checksum);
-    checksum += read8(section + 0x100A) + read8(section + 0x100B); /* J += US */
-    write16(section + 0x138E, checksum);
+    if (read8(&section[0x1380]) != 0x00) /* legacy checksum offset (JAP) */
+        write16(section + 0x138E, checksum);
+    else
+        write16(section + 0x100A, checksum);
     return (checksum & 0xFFFFu);
 }
 
