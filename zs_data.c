@@ -674,22 +674,27 @@ int magic_number_test(unsigned int section_ID)
 u16 fix_checksum(unsigned int section_ID)
 {
     u8 * section;
-    int owl_saved;
+    int format; /* if packed to 8 KiB + backup 8 KiB, no Pictograph Box/owl */
     register size_t i, limit;
     register u16 checksum;
 
     section = &flash_RAM[FILE_SIZE * (section_ID % NUMBER_OF_DATA_FILES)];
     checksum = 0x0000;
-    owl_saved = (read8(section + 0x0023) != 0) ? 1 : 0;
-    limit = (FILE_SIZE / 2) << owl_saved; /* 0x2000 normal, 0x4000 owl saves */
 
+    new_format = 1;
+    for (i = 0; i < FILE_SIZE / 2; i++)
+        if (read8(&section[i]) != read8(&section[0x2000 + i])) {
+            new_format = 2;
+            break;
+        }
+
+    limit = FILE_SIZE / new_format;
     write16(section + 0x100A, checksum); /* Do not add checksum to itself. */
-    if (!owl_saved) /* No Pictograph Box data stored here; assume JAP offset. */
-        write16(section + 0x138E, checksum);
+    write16(section + 0x138E, checksum);
 
 /*
  * Storing a save file checksum implies we are writing valid save file data,
- * so we may as well make sure that the required magic number is set.
+ * so we may as well make sure that the required magic number is also set.
  */
     for (i = 0; i < BYTES_IN_MAGIC_NUMBER; i++)
         write8(section + 0x0024 + i, newf[i]);
@@ -699,9 +704,8 @@ u16 fix_checksum(unsigned int section_ID)
 
     write16(section + 0x100A, checksum);
     checksum += read8(section + 0x100A) + read8(section + 0x100B); /* J += US */
-    if (!owl_saved) /* It could be a JAP ROM, so try to be bi-compatible. */
-        write16(section + 0x138E, checksum);
-    return (checksum);
+    write16(section + 0x138E, checksum);
+    return (checksum & 0xFFFFu);
 }
 
 int zs_endian_swap_mask(int optc, char ** optv)
