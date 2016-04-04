@@ -586,6 +586,10 @@ int picture_frame_buffer(int optc, char ** optv)
     const size_t pitch = CFB_WIDTH * CFB_BITS_PER_PIXEL / 8;
     const size_t file_offset = 0x0010E0;
 
+    intensity  = read8(&file[0x00BC]); /* 31..24 of Quest Status Booleans */
+    intensity |= 0x02; /* Pictograph Box picture taken */
+    write8(&file[0x00BC], intensity);
+
     if (optc < 2) { /* Export 5-bit CFB in flash RAM to a BMP file. */
         BMP_stream = fopen("picture.bmp", "wb");
         if (BMP_stream == NULL)
