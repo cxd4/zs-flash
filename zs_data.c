@@ -694,6 +694,7 @@ u16 fix_checksum(unsigned int section_ID)
         checksum += read8(section + i);
 
     write16(section + 0x100A, checksum);
+    checksum += read8(section + 0x100A) + read8(section + 0x100B); /* J += US */
     if (!owl_saved) /* It could be a JAP ROM, so try to be bi-compatible. */
         write16(section + 0x138E, checksum);
     return (checksum);
