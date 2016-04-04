@@ -702,10 +702,11 @@ u16 fix_checksum(unsigned int section_ID)
     for (i = 0; i < limit; i++)
         checksum += read8(section + i);
 
-    if (read8(&section[0x1380]) != 0x00) /* legacy checksum offset (JAP) */
-        write16(section + 0x138E, checksum);
-    else
-        write16(section + 0x100A, checksum);
+#if defined(LEGACY_CHECKSUM_OFFSET)
+    write16(section + 0x138E, checksum);
+#else
+    write16(section + 0x100A, checksum);
+#endif
     return (checksum & 0xFFFFu);
 }
 
