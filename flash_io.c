@@ -196,7 +196,7 @@ unsigned int swap_flash(unsigned int interval)
     i = 0x0000;
     do {
         RCP.block = read64(&flash_RAM[i + 0x0020]);
-        if (RCP.block != 0 && RCP.block != ~0)
+        if (RCP.block != 0 && ~RCP.block != 0)
             break;
         i += FILE_SIZE;
     } while (i < FLASH_SIZE);
