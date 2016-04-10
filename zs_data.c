@@ -189,6 +189,17 @@ int file_copy(int optc, char ** optv)
     return ERR_NONE;
 }
 
+int owl_area(int optc, char ** optv)
+{
+    unsigned long input;
+    const size_t file_offset = 0x00000E;
+
+    if (optc < 2)
+        return show16("owl area", file_offset);
+    write8(&file[0x000023], 0x01); /* set when saved by owl statues */
+    input = strtoul(optv[1], NULL, 0);
+    return send16(file_offset, input);
+}
 int player_mask(int optc, char ** optv)
 {
     unsigned long input;
@@ -980,13 +991,15 @@ void init_options(void)
     opt_table['r'] = lupy_count; /* That means "Rupees". */
     opt_table['z'] = zelda_time; /* daily time:  0x0000 midnight, 0x8000 noon */
 
+    opt_table['+'] = picture_frame_buffer;
+    opt_table['-'] = owl_area;
+
 /*
  * special-purpose command-line options fundamental to the flash RAM access
  * Nothing here is pertinent to the game's saved progress data itself.
  */
     opt_table['='] = zs_endian_swap_mask;
     opt_table['@'] = zs_file_pointer;
-    opt_table['+'] = picture_frame_buffer;
 
     opt_table['&'] = file_erase;
     opt_table['|'] = file_new;
