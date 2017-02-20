@@ -30,6 +30,18 @@ static const u8 newf[BYTES_IN_MAGIC_NUMBER] = {
  */
 u8 * file = &flash_RAM[0 * FILE_SIZE];
 
+/*
+ * Ultimately, it is impossible to prove whether the save data was written by
+ * a Japanese release of the game or not.  If it was, FILE_SIZE should not be
+ * divided by 2 because the Pictograph Box frame buffer is part of the file.
+ *
+ * Most people only play with the USA/Europe releases, so we'll default to 0.
+ * Under that assumption, FILE_SIZE may be divided into 2 sections as backup.
+ *
+ * Try changing this to TRUE if playing on an old Japanese ROM version.
+ */
+static Boolean is_old_JAP = FALSE;
+
 int file_erase(int optc, char ** optv)
 {
     int response;
@@ -595,7 +607,7 @@ int picture_frame_buffer(int optc, char ** optv)
     register size_t pixel, scanline;
     register unsigned int i, j;
     const size_t pitch = CFB_WIDTH * CFB_BITS_PER_PIXEL / 8;
-    const size_t file_offset = /* is_old_JAP ? 0x001390 : */0x0010E0;
+    const size_t file_offset = is_old_JAP ? 0x001390 : 0x0010E0;
 
     intensity  = read8(&file[0x00BC]); /* 31..24 of Quest Status Booleans */
     intensity |= 0x02; /* Pictograph Box picture taken */
@@ -692,7 +704,7 @@ u16 fix_checksum(unsigned int section_ID)
     section = &flash_RAM[FILE_SIZE * (section_ID % NUMBER_OF_DATA_FILES)];
     checksum = 0x0000;
 
-    format = (read16(&section[0x100A]) != read16(&section[0x300A])) ? 1 : 0;
+    format = (is_old_JAP ? 1 : 0);
     limit = (FILE_SIZE / 2) << format;
 
 /*

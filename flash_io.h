@@ -46,6 +46,12 @@
 
 #include <limits.h>
 
+#if !defined(TRUE) && !defined(FALSE)
+#define FALSE           0
+#define TRUE            1
+#endif
+typedef int Boolean;
+
 /*
  * fread() and fwrite() converting 9-bit chars into 8-bit MIPS byte arrays...
  * Sounds interesting but unfortunately like something I have no way to test.
