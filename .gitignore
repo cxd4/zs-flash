@@ -3,6 +3,7 @@ zs
 
 # compilation output
 obj/
+*.asm
 
 # binary pixel map image formats (when working with Pictograph Box support)
 *.bmp
