@@ -182,7 +182,7 @@ unsigned int swap_flash(unsigned int interval)
 {
     RCP_block RCP;
     unsigned int mask;
-    register size_t i, j;
+    register u32 i, j;
 
     if (interval != 0) { /* callee-defined endian swap on a fixed interval */
         mask = interval - 1; /* e.g. (interval = 4) for a 32-bit swap */

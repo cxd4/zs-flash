@@ -6,6 +6,11 @@
 #define FILE_MIN_ADDR           0x000000
 #define FILE_MAX_ADDR           0x003FFF
 
+#ifdef  REAL_MODE_DOS_MEMORY_LIMITS
+#undef  FLASH_MAX_ADDR
+#define FLASH_MAX_ADDR          0x00FFFFu
+#endif
+
 /*
  * RCP has only block-access (64-bit intervals) to the flash RAM.
  */
@@ -19,7 +24,7 @@
 #error Unaligned flash memory range for save file segmentation.
 #endif
 
-#define FLASH_SIZE              ((FLASH_MAX_ADDR) - (FLASH_MIN_ADDR) + 1)
+#define FLASH_SIZE              ((FLASH_MAX_ADDR) - (FLASH_MIN_ADDR) + 1ul)
 #define FILE_SIZE               ((FILE_MAX_ADDR) - (FILE_MIN_ADDR) + 1)
 
 #define NUMBER_OF_DATA_FILES    ((FLASH_SIZE) / (FILE_SIZE))
