@@ -206,7 +206,7 @@ unsigned int swap_flash(unsigned int interval)
         goto swap_memory;
     }
 
-    switch (RCP.block & 0x00000000FFFFFFFFul) {
+    switch ((u32)(RCP.block & 0x00000000FFFFFFFFul)) {
     case /* 'ZELD' */0x5A454C44:
         mask = 0;
         break;
@@ -220,7 +220,7 @@ unsigned int swap_flash(unsigned int interval)
         mask = 3;
         break;
     default:
-        switch ((RCP.block >> 32) & 0x00000000FFFFFFFFul) {
+        switch ((u32)((RCP.block >> 32) & 0x00000000FFFFFFFFul)) {
         case /* 'ZELD' */0x5A454C44:
             mask = 4;
             break;
