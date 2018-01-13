@@ -21,7 +21,7 @@
 #define CFB_BITS_PER_PIXEL              5
 #define CFB_PIXELS                      ((CFB_WIDTH) * (CFB_HEIGHT))
 
-#define BMP_BITS_PER_PIXEL              24
+#define BMP_BITS_PER_PIXEL              24ul
 #define BMP_PIXELS                      ((CFB_PIXELS) * (BMP_BITS_PER_PIXEL)/8)
 #define BMP_SIZE                        (14 + 12 + (BMP_PIXELS))
 #define CFB_SIZE                        ((CFB_PIXELS) * (CFB_BITS_PER_PIXEL)/8)

@@ -588,9 +588,9 @@ static const unsigned char bitmap_header[] = {
     (u8)((BMP_SIZE >> 16) & 0xFFu), (u8)((BMP_SIZE >> 24) & 0xFFu),
     0x00, 0x00, /* reserved */
     0x00, 0x00, /* reserved */
-    14 + 12, (0 >> 8), (0 >> 16), (0 >> 24), /* pixel map offset */
+    14 + 12, (0 >> 8), (0ul >> 16), (0ul >> 24), /* pixel map offset */
 
-    12, (0 >> 8), (0 >> 16), (0 >> 24), /* BMP version header size */
+    12, (0 >> 8), (0ul >> 16), (0ul >> 24), /* BMP version header size */
     (CFB_WIDTH  >> 0) & 0xFFu, (CFB_WIDTH  >> 8) & 0xFFu,
     (CFB_HEIGHT >> 0) & 0xFFu, (CFB_HEIGHT >> 8) & 0xFFu,
     1, (0x00 >> 8), /* number of color planes = 1 */
