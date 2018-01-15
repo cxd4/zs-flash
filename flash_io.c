@@ -126,7 +126,7 @@ long load_flash(const char * filename)
         );
         if (elements_read != BLOCK_SIZE) {
             my_error(ERR_DISK_READ_FAILURE);
-            bytes_read = (long)elements_read;
+            bytes_read += (long)elements_read;
             return (bytes_read);
         }
     }
