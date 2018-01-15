@@ -127,7 +127,7 @@ long load_flash(const char * filename)
         if (elements_read != BLOCK_SIZE) {
             my_error(ERR_DISK_READ_FAILURE);
             bytes_read += (long)elements_read;
-            return (bytes_read);
+            break;
         }
     }
 
@@ -158,7 +158,7 @@ long save_flash(const char * filename)
         if (elements_written != BLOCK_SIZE) {
             my_error(ERR_DISK_WRITE_FAILURE);
             bytes_sent += (long)elements_written;
-            return (bytes_sent);
+            break;
         }
     }
 
