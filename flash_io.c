@@ -108,12 +108,13 @@ void write64(void * dst, const u64 src)
 long load_flash(const char * filename)
 {
     FILE * stream;
-    long bytes_read;
+    unsigned long bytes_read;
+    long bytes_read_as_long; /* ftell() and fseek() need signed integers. */
 
     stream = fopen(filename, "rb");
     if (stream == NULL) {
         my_error(ERR_FILE_STREAM_NO_LINK);
-        return (bytes_read = 0);
+        return (bytes_read_as_long = 0);
     }
 
     for (bytes_read = 0; bytes_read < FLASH_SIZE; bytes_read += BLOCK_SIZE) {
@@ -126,25 +127,31 @@ long load_flash(const char * filename)
         );
         if (elements_read != BLOCK_SIZE) {
             my_error(ERR_DISK_READ_FAILURE);
-            bytes_read += (long)elements_read;
+            bytes_read += elements_read;
             break;
         }
     }
 
     while (fclose(stream) != 0)
         my_error(ERR_FILE_STREAM_STUCK);
-    return (bytes_read);
+    if (bytes_read > LONG_MAX) {
+        my_error(ERR_INTEGER_TOO_LARGE);
+        bytes_read = LONG_MAX;
+    }
+    bytes_read_as_long = (long)(bytes_read);
+    return (bytes_read_as_long);
 }
 
 long save_flash(const char * filename)
 {
     FILE * stream;
-    long bytes_sent;
+    unsigned long bytes_sent;
+    long bytes_sent_as_long; /* ftell() and fseek() need signed integers. */
 
     stream = fopen(filename, "wb");
     if (stream == NULL) {
         my_error(ERR_FILE_STREAM_NO_LINK);
-        return (bytes_sent = 0);
+        return (bytes_sent_as_long = 0);
     }
 
     for (bytes_sent = 0; bytes_sent < FLASH_SIZE; bytes_sent += BLOCK_SIZE) {
@@ -157,14 +164,19 @@ long save_flash(const char * filename)
         );
         if (elements_written != BLOCK_SIZE) {
             my_error(ERR_DISK_WRITE_FAILURE);
-            bytes_sent += (long)elements_written;
+            bytes_sent += elements_written;
             break;
         }
     }
 
     while (fclose(stream) != 0)
         my_error(ERR_FILE_STREAM_STUCK);
-    return (bytes_sent);
+    if (bytes_sent > LONG_MAX) {
+        my_error(ERR_INTEGER_TOO_LARGE);
+        bytes_sent = LONG_MAX;
+    }
+    bytes_sent_as_long = (long)(bytes_sent);
+    return (bytes_sent_as_long);
 }
 
 static const char* endian_types[] = {
