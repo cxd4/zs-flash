@@ -5,7 +5,7 @@
 #include "flash_io.h"
 #include "zs_data.h"
 
-int main(int argc, char ** argv)
+int main(int argc, char* argv[])
 {
     long file_size;
     unsigned int section_ID;
