@@ -40,3 +40,26 @@ int main(int argc, char* argv[])
     printf("save size:  %li\n", file_size);
     return ERR_NONE;
 }
+
+/*
+ * provided to reduce EXE file size of the MS-DOS build by DJGPP
+ *
+ * Compile with:  gcc -o zs *.c -Os -lc # -lc makes -lgcc get stripped out
+ * Strip separately (not passing -s to gcc) with:  strip -s zs.exe
+ *
+ * Open Watcom:  wcl386 -fe=zs *.c -j -d0 -os -bcl=stub32x
+ */
+#ifdef __DJGPP__
+#include <crt0.h>
+
+char**
+__crt0_glob_function(char* arg)
+{
+    return NULL;
+}
+void
+__crt0_load_environment_file(char* progname)
+{
+    return;
+}
+#endif
