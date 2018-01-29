@@ -718,11 +718,7 @@ u16 fix_checksum(unsigned int section_ID)
     for (i = 0; i < limit; i++)
         checksum += read8(section + i);
 
-#if defined(LEGACY_CHECKSUM_OFFSET)
-    write16(section + 0x138E, checksum);
-#else
-    write16(section + 0x100A, checksum);
-#endif
+    write16(section + (is_old_JAP ? 0x138E : 0x100A), checksum);
     return (checksum & 0xFFFFu);
 }
 
