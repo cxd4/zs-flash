@@ -150,7 +150,7 @@ long load_flash(const char * filename)
     while (fclose(stream) != 0)
         my_error(ERR_FILE_STREAM_STUCK);
     if (bytes_read > LONG_MAX) {
-        my_error(ERR_INTEGER_TOO_LARGE);
+        my_error(ERR_OUT_OF_MEMORY);
         bytes_read = LONG_MAX;
     }
     bytes_read_as_long = (long)(bytes_read);
@@ -189,7 +189,7 @@ long save_flash(const char * filename)
     while (fclose(stream) != 0)
         my_error(ERR_FILE_STREAM_STUCK);
     if (bytes_sent > LONG_MAX) {
-        my_error(ERR_INTEGER_TOO_LARGE);
+        my_error(ERR_OUT_OF_MEMORY);
         bytes_sent = LONG_MAX;
     }
     bytes_sent_as_long = (long)(bytes_sent);

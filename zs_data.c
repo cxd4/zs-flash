@@ -639,7 +639,7 @@ int picture_frame_buffer(int optc, char ** optv)
  /* Import 5-bit CFB to flash RAM from a BMP file. */
     pixel_array = malloc(CFB_PIXELS * BMP_BITS_PER_PIXEL/8);
     if (pixel_array == NULL)
-        return ERR_INTEGER_TOO_LARGE;
+        return ERR_OUT_OF_MEMORY;
 
     BMP_stream = fopen(optv[1], "rb");
     if (BMP_stream == NULL)
