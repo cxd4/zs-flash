@@ -25,6 +25,7 @@ static const char errors[ERR_UNKNOWN + 1][32] = {
     "Signed underflow of user input.",
     "Signed overflow of user input." ,
 
+    "Insufficient memory to perform.",
     "Unimplemented error identifier.",
 };
 

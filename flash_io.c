@@ -1,9 +1,10 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include "flash_io.h"
 #include "errors.h"
 
-u8 flash_RAM[FLASH_SIZE];
+u8* flash_RAM;
 
 u8 read8(const void * address)
 {
@@ -105,6 +106,18 @@ void write64(void * dst, const u64 src)
     return;
 }
 
+u8* falloc(size_t flash_size)
+{
+    void* address;
+
+    address = malloc(flash_size);
+    if (address == NULL) {
+        my_error(ERR_OUT_OF_MEMORY);
+        exit(EXIT_FAILURE);
+    }
+    return (u8 *)(address);
+}
+
 long load_flash(const char * filename)
 {
     FILE * stream;
@@ -116,6 +129,8 @@ long load_flash(const char * filename)
         my_error(ERR_FILE_STREAM_NO_LINK);
         return (bytes_read_as_long = 0);
     }
+    if (flash_RAM == NULL)
+        flash_RAM = falloc(FLASH_SIZE);
 
     for (bytes_read = 0; bytes_read < FLASH_SIZE; bytes_read += BLOCK_SIZE) {
         size_t elements_read;
@@ -153,6 +168,8 @@ long save_flash(const char * filename)
         my_error(ERR_FILE_STREAM_NO_LINK);
         return (bytes_sent_as_long = 0);
     }
+    if (flash_RAM == NULL)
+        flash_RAM = falloc(FLASH_SIZE);
 
     for (bytes_sent = 0; bytes_sent < FLASH_SIZE; bytes_sent += BLOCK_SIZE) {
         size_t elements_written;
@@ -199,6 +216,10 @@ unsigned int swap_flash(unsigned int interval)
     if (interval != 0) { /* callee-defined endian swap on a fixed interval */
         mask = interval - 1; /* e.g. (interval = 4) for a 32-bit swap */
         goto swap_memory;
+    }
+    if (flash_RAM == NULL) {
+        my_error(ERR_OUT_OF_MEMORY);
+        return 0; /* Swapping an empty flash RAM buffer is pointless. */
     }
 
 /*

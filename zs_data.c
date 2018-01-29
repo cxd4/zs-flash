@@ -23,12 +23,7 @@ static const u8 newf[BYTES_IN_MAGIC_NUMBER] = {
     0x41, /* 'A' */
     0x33, /* '3' */
 }; /* "ZELDA3" also works but is not bit-exact or as portable. */
-
-/*
- * Unless the user specifies otherwise on the command line, the save file
- * address will by default be File 1 in the flash RAM:  0x2000 * 0.
- */
-u8 * file = &flash_RAM[0 * FILE_SIZE];
+u8 * file;
 
 /*
  * Ultimately, it is impossible to prove whether the save data was written by
@@ -596,10 +591,10 @@ static const unsigned char bitmap_header[] = {
     1, (0x00 >> 8), /* number of color planes = 1 */
     BMP_BITS_PER_PIXEL, (0 >> 8), /* R8G8B8 24 bits per pixel */
 };
-static unsigned char pixel_array[CFB_PIXELS * BMP_BITS_PER_PIXEL/8];
 int picture_frame_buffer(int optc, char ** optv)
 {
     FILE * BMP_stream;
+    unsigned char* pixel_array;
     u64 forty_bits; /* 40 bits = 5 whole bytes that can store 8 5-bit pixels. */
     u8 intensity;
     size_t elements;
@@ -642,6 +637,10 @@ int picture_frame_buffer(int optc, char ** optv)
     }
 
  /* Import 5-bit CFB to flash RAM from a BMP file. */
+    pixel_array = malloc(CFB_PIXELS * BMP_BITS_PER_PIXEL/8);
+    if (pixel_array == NULL)
+        return ERR_INTEGER_TOO_LARGE;
+
     BMP_stream = fopen(optv[1], "rb");
     if (BMP_stream == NULL)
         return ERR_FILE_STREAM_NO_LINK;
@@ -678,6 +677,7 @@ int picture_frame_buffer(int optc, char ** optv)
             index += i * (BMP_BITS_PER_PIXEL / 8);
         }
     }
+    free(pixel_array);
     return ERR_NONE;
 }
 
@@ -938,16 +938,15 @@ int opt_execute(char ** optv)
     size_t option_ID;
     int error_signal;
     int optc;
+    const size_t limit = 1U << CHAR_BIT;
 
     optc = 1;
-    if (optv[0][0] != '-')
-    {
+    if (optv[0][0] != '-') {
         my_error(ERR_OPTION_INVALID);
         return (optc);
     }
 
-    while (optv[optc] != NULL)
-    {
+    while (optv[optc] != NULL) {
         long option_name_as_a_number;
         int not_a_number;
 
@@ -962,10 +961,15 @@ int opt_execute(char ** optv)
         ++optc;
     }
 
-    option_ID = (optv[0][1] < 0) ? 0 : (size_t)optv[0][1];
-    error_signal = opt_table[option_ID](optc, optv);
-    if (error_signal != ERR_NONE)
-        my_error(error_signal);
+    option_ID = (size_t)(signed int)optv[0][1]; /* error if signed char < 0 */
+    if (option_ID >= limit) {
+        if (optv[0][1] != '\0')
+            my_error(ERR_OUT_OF_MEMORY);
+    } else {
+        error_signal = opt_table[option_ID](optc, optv);
+        if (error_signal != ERR_NONE)
+            my_error(error_signal);
+    }
     return (optc);
 }
 
@@ -975,8 +979,20 @@ void init_options(void)
     const size_t limit = 1U << CHAR_BIT;
 
     opt_table = (p_opt *)malloc(limit * sizeof(p_opt));
+    if (opt_table == NULL) {
+        my_error(ERR_OUT_OF_MEMORY);
+        return;
+    }
     for (i = 0; i < limit; i++)
         opt_table[i] = reserved;
+
+    if (flash_RAM == NULL)
+        flash_RAM = falloc(FLASH_SIZE);
+/*
+ * Unless the user specifies otherwise on the command line, the save file
+ * address will by default be File 1 in the flash RAM:  0x2000 * 0.
+ */
+    file = &flash_RAM[0 * FILE_SIZE];
 
     opt_table['C'] = opening_flag; /* Game loads up in Clock Town? */
     opt_table['D'] = totalday; /* current day number, preferably from 1 to 4 */

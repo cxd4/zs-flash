@@ -1,15 +1,12 @@
 #ifndef _FLASH_IO_H_
 #define _FLASH_IO_H_
 
+#include <stddef.h>
+
 #define FLASH_MIN_ADDR          0x000000
 #define FLASH_MAX_ADDR          0x01FFFF
 #define FILE_MIN_ADDR           0x000000
 #define FILE_MAX_ADDR           0x003FFF
-
-#ifdef  REAL_MODE_DOS_MEMORY_LIMITS
-#undef  FLASH_MAX_ADDR
-#define FLASH_MAX_ADDR          0x00FFFFu
-#endif
 
 /*
  * RCP has only block-access (64-bit intervals) to the flash RAM.
@@ -132,7 +129,7 @@ typedef union {
     u8 bytes[8];
 } RCP_block;
 
-extern u8 flash_RAM[FLASH_SIZE];
+extern u8* flash_RAM;
 
 /*
  * reads from flash-native endian to client-native endian
@@ -156,6 +153,7 @@ extern void write64(void * dst, const u64 src);
  * memory management functions for the entire flash RAM
  * The only portable construct we have for flash I/O is C file system access.
  */
+extern u8* falloc(size_t flash_size);
 extern long load_flash(const char * filename);
 extern long save_flash(const char * filename);
 extern unsigned int swap_flash(unsigned int interval);

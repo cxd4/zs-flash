@@ -37,6 +37,7 @@ int main(int argc, char* argv[])
 
     swap_flash(swap_mask + 1);
     file_size = save_flash(argv[1]);
+    free(flash_RAM);
     printf("save size:  %li\n", file_size);
     return ERR_NONE;
 }
@@ -44,10 +45,10 @@ int main(int argc, char* argv[])
 /*
  * provided to reduce EXE file size of the MS-DOS build by DJGPP
  *
- * Compile with:  gcc -o zs *.c -Os -lc # -lc makes -lgcc get stripped out
+ * DJGPP      :  gcc -o zs *.c -Os -lc # -lc makes -lgcc get stripped out
  * Strip separately (not passing -s to gcc) with:  strip -s zs.exe
  *
- * Open Watcom:  wcl386 -fe=zs *.c -j -d0 -os -bcl=stub32x
+ * Open Watcom:  wcl386 -fe=zs *.c -os -d0 -s -bcl=stub32xc
  */
 #ifdef __DJGPP__
 #include <crt0.h>
