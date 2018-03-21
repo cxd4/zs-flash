@@ -67,6 +67,7 @@ extern void init_options(void);
 extern int reserved(int optc, char ** optv);
 extern int zs_endian_swap_mask(int optc, char ** optv);
 extern int zs_file_pointer(int optc, char ** optv);
+extern int set_fmt(int optc, char ** optv);
 
 /*
  * Basic game data save file operations--NEW, ERASE, COPY, and SWAP.
@@ -122,6 +123,11 @@ extern int send64(size_t offset, char * argument_string);
 extern int sendx8 (size_t offset, signed long input); /* sign-extended */
 extern int sendx16(size_t offset, signed long input);
 extern int sendx32(size_t offset, signed long input);
+
+/*
+ * Interpret user-defined textual input as a true/false Boolean.
+ */
+extern Boolean strtobool(const char * text);
 
 /*
  * Execute a command-line option for modifying saved data.

@@ -680,6 +680,16 @@ int picture_frame_buffer(int optc, char ** optv)
     free(pixel_array);
     return ERR_NONE;
 }
+int set_fmt(int optc, char ** optv)
+{
+    static const char newold[2][4] = {"new", "old"};
+
+    if (optc < 2)
+        return ERR_INTEGER_COUNT_INSUFFICIENT;
+    is_old_JAP = strtobool(optv[1]);
+    printf("Accessing save data under %s format.\n", newold[is_old_JAP]);
+    return ERR_NONE;
+}
 
 int magic_number_test(unsigned int section_ID)
 {
@@ -697,16 +707,10 @@ int magic_number_test(unsigned int section_ID)
 u16 fix_checksum(unsigned int section_ID)
 {
     u8 * section;
-    int format; /* if packed to 8 KiB + backup 8 KiB, no Pictograph Box/owl */
-    register size_t i, limit;
+    register size_t i, location;
     register u16 checksum;
 
     section = &flash_RAM[FILE_SIZE * (section_ID % NUMBER_OF_DATA_FILES)];
-    checksum = 0x0000;
-
-    format = (is_old_JAP ? 1 : 0);
-    limit = (FILE_SIZE / 2) << format;
-
 /*
  * Storing a save file checksum implies we are writing valid save file data,
  * so we may as well make sure that the required magic number is also set.
@@ -714,11 +718,13 @@ u16 fix_checksum(unsigned int section_ID)
     for (i = 0; i < BYTES_IN_MAGIC_NUMBER; i++)
         write8(section + 0x0024 + i, newf[i]);
 
-    write16(section + 0x100A, checksum); /* Do not add checksum to itself. */
-    for (i = 0; i < limit; i++)
+    location = (is_old_JAP) ? 0x138E : 0x100A;
+    checksum = 0x0000;
+    write16(section + location, 0x0000); /* Do not add checksum to itself. */
+    for (i = 0; i < 0x2000; i++)
         checksum += read8(section + i);
 
-    write16(section + (is_old_JAP ? 0x138E : 0x100A), checksum);
+    write16(section + location, checksum);
     return (checksum & 0xFFFFu);
 }
 
@@ -920,6 +926,25 @@ int sendx32(size_t offset, signed long input)
     return ERR_NONE;
 }
 
+Boolean strtobool(const char * text)
+{
+    double real;
+    signed long integer;
+
+    if (toupper(text[0]) == 'T')
+        return TRUE;
+#if 0
+    if (text[0] & 1)
+        return TRUE; /* covers '1' vs. '0', 'Y' vs. 'N'...but ASCII-only :( */
+#endif
+
+    integer = strtol(text, NULL, 0);
+    real    = strtod(text, NULL);
+    if (integer != 0 || real != 0)
+        return TRUE; /* Results of attempted overflow or underflow are != 0. */
+    return FALSE; /* User entered a zero value or text not starting with a T. */
+}
+
 int reserved(int optc, char ** optv)
 {
     puts(optv[0]);
@@ -1017,6 +1042,7 @@ void init_options(void)
 
     opt_table['+'] = picture_frame_buffer;
     opt_table['-'] = owl_area;
+    opt_table['J'] = set_fmt; /* old JAP save format or new save format */
 
 /*
  * special-purpose command-line options fundamental to the flash RAM access
