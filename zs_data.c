@@ -707,7 +707,7 @@ int magic_number_test(unsigned int section_ID)
 u16 fix_checksum(unsigned int section_ID)
 {
     u8 * section;
-    register size_t i, location;
+    register size_t i, location, length;
     register u16 checksum;
 
     section = &flash_RAM[FILE_SIZE * (section_ID % NUMBER_OF_DATA_FILES)];
@@ -721,7 +721,9 @@ u16 fix_checksum(unsigned int section_ID)
     location = (is_old_JAP) ? 0x138E : 0x100A;
     checksum = 0x0000;
     write16(section + location, 0x0000); /* Do not add checksum to itself. */
-    for (i = 0; i < 0x2000; i++)
+
+    length = (is_old_JAP) ? 0x3F4F + 1 : 0x100A;
+    for (i = 0; i < length; i++)
         checksum += read8(section + i);
 
     write16(section + location, checksum);
