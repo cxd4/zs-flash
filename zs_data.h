@@ -60,6 +60,7 @@ extern int collect_register(int optc, char ** optv);
 extern int key_compass_map(int optc, char ** optv);
 extern int key_register(int optc, char ** optv);
 extern int orange_fairy(int optc, char ** optv);
+extern int week_event_reg(int optc, char ** optv);
 extern int numbers_table(int optc, char ** optv);
 extern int picture_frame_buffer(int optc, char ** optv);
 
@@ -128,6 +129,9 @@ extern int sendx32(size_t offset, signed long input);
  * Interpret user-defined textual input as a true/false Boolean.
  */
 extern Boolean strtobool(const char * text);
+
+extern int show1(const char * name, size_t offset);
+extern int send1(size_t offset, const char * true_or_false);
 
 /*
  * Execute a command-line option for modifying saved data.

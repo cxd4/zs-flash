@@ -541,6 +541,24 @@ int orange_fairy(int optc, char ** optv)
     return send8(file_offset + dungeon_ID, input);
 }
 
+int week_event_reg(int optc, char ** optv)
+{
+    size_t bit_offset;
+    unsigned long input;
+    const size_t file_offset = 0x000EF8 * 8;
+
+    if (optc < 2)
+        return ERR_INTEGER_COUNT_INSUFFICIENT;
+    input = strtoul(optv[1], NULL, 0);
+    if (input >= 800) /* week_event_reg is 800 bits long. */
+        return ERR_INTEGER_TOO_LARGE;
+    bit_offset = (size_t)input;
+
+    if (optc < 3)
+        return show1("week_event_reg", file_offset + bit_offset);
+    return send1(file_offset + bit_offset, optv[2]);
+}
+
 int numbers_table(int optc, char ** optv)
 {
     u8 numbers[3][NUMBERS_PER_TICKET];
@@ -774,6 +792,22 @@ int zs_file_pointer(int optc, char ** optv)
  * These following nine high-level functions are to make well-defined type
  * range conversion easier and optimize the code for small call stack size.
  */
+
+int show1(const char * name, size_t offset)
+{
+    Boolean output;
+    u8 source_byte;
+    size_t byte_address, shift_amount;
+    const char t_or_f[2][6] = { "false", "true" };
+
+    shift_amount = (offset - 0) & 7;
+    byte_address = (offset - shift_amount) >> 3;
+    source_byte = read8(file + byte_address);
+    output = (source_byte & (1 << shift_amount)) ? TRUE : FALSE;
+
+    printf("%s:  %s\n", name, t_or_f[output & 1]);
+    return ERR_NONE;
+}
 int show8(const char * name, size_t offset)
 {
     u8 output;
@@ -810,6 +844,20 @@ int show64(const char * name, size_t offset)
     return ERR_NONE;
 }
 
+int send1(size_t offset, const char * true_or_false)
+{
+    Boolean output;
+    u8 source_byte;
+    size_t byte_address, shift_amount;
+
+    shift_amount = (offset - 0) & 7;
+    byte_address = (offset - shift_amount) >> 3;
+    output = strtobool(true_or_false) ? 1 : 0;
+
+    source_byte = read8(file + byte_address) & ~(1 << shift_amount);
+    write8(file + byte_address, source_byte | (output << shift_amount));
+    return ERR_NONE;
+}
 int send8(size_t offset, unsigned long input)
 {
     u8 output;
@@ -1027,6 +1075,7 @@ void init_options(void)
     opt_table['N'] = player_name; /* Link's name and the file select name */
     opt_table['R'] = long_sword_hp; /* Razor Sword durability */
     opt_table['U'] = non_equip_register; /* permanent equipment upgrades */
+    opt_table['W'] = week_event_reg; /* 800 bits of tracking what Link did */
     opt_table['Z'] = change_zelda_time; /* (time_rate + 3) time acceleration */
 
     opt_table['d'] = key_compass_map; /* boss key and dungeon map and compass */
