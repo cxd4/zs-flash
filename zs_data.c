@@ -1025,6 +1025,7 @@ int opt_execute(char ** optv)
             break; /* We've reached the end of the command buffer. */
 
         option_name_as_a_number = strtol(&optv[optc][1], NULL, 0);
+        errno = 0; /* Defer error-checking until arguments are parsed. */
         not_a_number = (option_name_as_a_number == 0) ? 1 : 0;
 
         if (optv[optc][0] == '-' && not_a_number)
