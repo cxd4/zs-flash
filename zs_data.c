@@ -25,6 +25,73 @@ static const u8 newf[BYTES_IN_MAGIC_NUMBER] = {
 }; /* "ZELDA3" also works but is not bit-exact or as portable. */
 u8 * file;
 
+static const heart_piece heart_pieces[] = {
+    { 8*0xD2E + 2,  1, "Clock Tower Deck" },
+    { 8*0xF45 + 0,  4, "Postman's Office" },
+    { 8*0xF41 + 3,  5, "Out of the Inn Toilet" },
+    { 8*0xF06 + 7, 13, "Deku Scrub Playground" },
+    { 8*0xD12 + 2,  2, "North Clock Town" },
+    { 8*0xF37 + 5,  3, "Swordsman's School" },
+    { 8*0xF47 + 7,  9, "Keaton Quiz" },
+    { 8*0xF49 + 3,  6, "Clock Town Postbox" },
+    { 8*0xF33 + 3, 12, "West Clock Town Bank" },
+    { 8*0xF43 + 7,  7, "Rosa Sisters" },
+    { 8*0xF18 + 2, 15, "Town Shooting Gallery" },
+    { 8*0xF0E + 7, 16, "Honey & Darling's Shop" },
+    { 8*0x383 + 1, 14, "Treasure Chest Shop" },
+    { 8*0xF2A + 1, 10, "Grandma's Story 1" },
+    { 8*0xF2A + 2, 11, "Grandma's Story 2" },
+    { 8*0xF34 + 4,  8, "Mayor Dotour" },
+
+    { 8*0xF2D + 1, 17, "Deku Scrub Grotto" },
+    { 8*0x1CE + 3, 19, "Pea Hat Grotto" },
+    { 8*0x1CE + 2, 20, "Dodongo Grotto" },
+    { 8*0xF52 + 4, 18, "Giant Gossip Stones" },
+    { 8*0x1CF + 2, 21, "Bio Deku Baba Grotto" },
+    { 8*0x80B + 1, 22, "Road to Southern Swamp" },
+    { 8*0xF00 + 5, 48, "Dog Race 500" },
+
+    { 8*0x894 + 6, 23, "Southern Swamp" },
+    { 8*0xE7A + 0, 27, "Tingle's Pictograph" }, /* probably wrong... */
+    { 8*0x5BC + 6, 28, "Deku Palace Garden" },
+    { 8*0x8B2 + 2, 29, "Woodfall" },
+    { 8*0xF33 + 4, 31, "Swamp Shooting Gallery" },
+    { 8*0xF12 + 6, 30, "Boat Cruise, Part 2" },
+
+    { 8*0x974 + 6, 24, "Goron Village" },
+    { 8*0xAFE + 0, 34, "Snowhead's Scarecrow" },
+    { 8*0xB37 + 7, 32, "Goron Pond in Spring" },
+    { 8*0xF1B + 7, 33, "Don Gero's Frog Choir" }, /* needs double-checking */
+
+    { 8*0x958 + 6, 25, "Zora Hall" },
+    { 8*0xF1F + 5, 35, "Zora Jam Session" },
+    { 8*0x72B + 7, 36, "Like Like" },
+    { 8*0x4DE + 4, 37, "Pirates' Fortress" },
+    { 8*0xE7A + 1, 38, "Pinnacle Rock" }, /* needs double-checking */
+    { 8*0x568 + 7, 39, "Oceanside Spider House" },
+    { 8*0xF30 + 1, 40, "Marine Research Lab" },
+    { 8*0xEF9 + 6, 42, "Beaver Race" }, /* needs double-checking */
+    { 8*0x70F + 5, 43, "Great Bay Scarecrow" },
+    { 8*0xF4A + 4, 41, "Great Bay Jumping Game" },
+
+    { 8*0x314 + 6, 26, "Ikana Canyon" }, /* Huh...wrong address? */
+    { 8*0xF2E + 6, 45, "Spirit House" },
+    { 8*0x258 + 7, 44, "Ikana Graveyard" },
+    { 8*0x436 + 2, 46, "Ikana Castle Columns" },
+    { 8*0xB8A + 2, 47, "Secret Shrine" },
+
+    { 8*0x5A3 + 1, 49, "Moon Dungeons (Deku)" },
+    { 8*0x7EF + 1, 50, "Moon Dungeons (Goron)" },
+    { 8*0x8CF + 1, 51, "Moon Dungeons (Zora)" },
+    { 8*0xC33 + 1, 52, "Moon Dungeons (Link)" },
+
+    /* not actually heart pieces but heart containers from defeating bosses */
+    { 8*0x46C + 7,  0, "Odolwa" },
+    { 8*0x878 + 7,  0, "Goht" },
+    { 8*0xB6C + 7,  0, "Gyorg" },
+    { 8*0x6F0 + 7,  0, "Twinmold" },
+};
+
 /*
  * Ultimately, it is impossible to prove whether the save data was written by
  * a Japanese release of the game or not.  If it was, FILE_SIZE should not be
@@ -708,6 +775,41 @@ int set_fmt(int optc, char ** optv)
     printf("Accessing save data under %s format.\n", newold[is_old_JAP]);
     return ERR_NONE;
 }
+int be_verbose(int optc, char ** optv)
+{
+    u8 source_byte;
+    size_t byte_address, shift_amount;
+    unsigned int missing_heart_pieces;
+    register unsigned int i;
+
+    printf("File has been saved %u times.\n", read16(file + 0x002A));
+    missing_heart_pieces = 0;
+
+    for (i = 0; i < sizeof(heart_pieces) / sizeof(heart_piece); i++) {
+        shift_amount = (heart_pieces[i].address - 0) & 7;
+        byte_address = (heart_pieces[i].address - shift_amount) >> 3;
+        source_byte = read8(file + byte_address);
+
+        if (source_byte & (0x01 << shift_amount))
+            continue;
+        if (missing_heart_pieces == 0)
+            puts("Missing heart pieces:");
+        if (i >= 52) {
+            printf(
+                "\tContainer #%u.  %s\n",
+                i - 52 + 1, heart_pieces[i].name
+            );
+            continue;
+        }
+        ++missing_heart_pieces;
+        printf(
+            "\t%2u.  %s (Nintendo Power #%u)\n",
+            i + 1, heart_pieces[i].name, heart_pieces[i].NPID
+        );
+    }
+    printf("Missing %u heart pieces.\n", missing_heart_pieces);
+    return ERR_NONE;
+}
 
 int magic_number_test(unsigned int section_ID)
 {
@@ -1090,6 +1192,7 @@ void init_options(void)
     opt_table['p'] = player_character; /* current mask transformation */
     opt_table['q'] = collect_register; /* Quest Status sub-screen data */
     opt_table['r'] = lupy_count; /* That means "Rupees". */
+    opt_table['v'] = be_verbose; /* Show missing heart pieces and stuff. */
     opt_table['z'] = zelda_time; /* daily time:  0x0000 midnight, 0x8000 noon */
 
     opt_table['+'] = picture_frame_buffer;

@@ -69,6 +69,7 @@ extern int reserved(int optc, char ** optv);
 extern int zs_endian_swap_mask(int optc, char ** optv);
 extern int zs_file_pointer(int optc, char ** optv);
 extern int set_fmt(int optc, char ** optv);
+extern int be_verbose(int optc, char ** optv);
 
 /*
  * Basic game data save file operations--NEW, ERASE, COPY, and SWAP.
@@ -129,6 +130,12 @@ extern int sendx32(size_t offset, signed long input);
  * Interpret user-defined textual input as a true/false Boolean.
  */
 extern Boolean strtobool(const char * text);
+
+typedef struct {
+    u16 address; /* (byte_address << 3) | (bit_number_0_thru_7) */
+    u8 NPID; /* heart piece number in Nintendo Power's official guide */
+    char* name; /* heart piece name according to Nintendo Power magazine */
+} heart_piece;
 
 extern int show1(const char * name, size_t offset);
 extern int send1(size_t offset, const char * true_or_false);
