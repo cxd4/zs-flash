@@ -65,10 +65,10 @@ zs %SAVE_FILE%^
  ^
  -EquipSwordAndShield 0x0034^
  ^
- -I it 0 0 00 -I it 1 0 01 -I it 2 0 02 -I it 3 0 03 -I it 4 0 04 -I it 5 0 05^
- -I it 0 1 06 -I it 1 1 07 -I it 2 1 08 -I it 3 1 09 -I it 4 1 0A -I it 5 1 0B^
- -I it 0 2 0C -I it 1 2 0D -I it 2 2 0E -I it 3 2 0F -I it 4 2 10 -I it 5 2 11^
- -I it 0 3 12 -I it 1 3 16 -I it 2 3 20 -I it 3 3 25 -I it 4 3 27 -I it 5 3 15^
+ -I it 0 0 00 -I it 0 1 01 -I it 0 2 02 -I it 0 3 03 -I it 0 4 04 -I it 0 5 05^
+ -I it 1 0 06 -I it 1 1 07 -I it 1 2 08 -I it 1 3 09 -I it 1 4 0A -I it 1 5 0B^
+ -I it 2 0 0C -I it 2 1 0D -I it 2 2 0E -I it 2 3 0F -I it 2 4 10 -I it 2 5 11^
+ -I it 3 0 12 -I it 3 1 16 -I it 3 2 20 -I it 3 3 25 -I it 3 4 27 -I it 3 5 15^
  -equip 1 33 "Goron Mask" -equip 2 35 "Fierce Deity" -equip 3 39 "Bunny Hood"^
  -mask 21 "Link's face wears the Mask of Fierce Deity."^
  -Inventory masks^

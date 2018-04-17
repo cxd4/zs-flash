@@ -470,7 +470,7 @@ int item_register(int optc, char ** optv)
 {
     u8 inv[INVENTORY_TABLE_HEIGHT][INVENTORY_TABLE_WIDTH];
     size_t file_offset;
-    unsigned long input, x, y;
+    unsigned long input, col, row;
     int subscreen_type;
     static const char* inventory_types[] = {
         "items", "masks"
@@ -482,30 +482,30 @@ int item_register(int optc, char ** optv)
     file_offset  = 0x000070;
     file_offset += (subscreen_type == 'M') ? 0x0018 : 0x0000;
 
-    for (y = 0; y < INVENTORY_TABLE_HEIGHT; y++)
-        for (x = 0; x < INVENTORY_TABLE_WIDTH; x++)
-            inv[y][x] = file[file_offset + x + y*INVENTORY_TABLE_WIDTH];
+    for (row = 0; row < INVENTORY_TABLE_HEIGHT; row++)
+        for (col = 0; col < INVENTORY_TABLE_WIDTH; col++)
+            inv[row][col] = file[file_offset + col + row*INVENTORY_TABLE_WIDTH];
 
-    if (optc < 3 + 1 + 1) { /* argv < "-I (string) (x) (y) (ITEM_ID)" */
+    if (optc < 3 + 1 + 1) { /* "-I (string) (row) (col) (ITEM_ID)" */
         printf(
             "%s (%s):\n",
             "item_register", inventory_types[(subscreen_type == 'M') ? 1 : 0]
         );
-        for (y = 0; y < INVENTORY_TABLE_HEIGHT; y++) {
+        for (row = 0; row < INVENTORY_TABLE_HEIGHT; row++) {
             putchar('\t');
-            for (x = 0; x < INVENTORY_TABLE_WIDTH; x++)
-                printf("%02X ", inv[y][x]);
+            for (col = 0; col < INVENTORY_TABLE_WIDTH; col++)
+                printf("%02X ", inv[row][col]);
             putchar('\n');
-	};
+        };
         return ERR_NONE;
     }
-    x = strtoul(optv[2], NULL, 0);
-    y = strtoul(optv[3], NULL, 0);
+    row = strtoul(optv[2], NULL, 0);
+    col = strtoul(optv[3], NULL, 0);
 
-    if (x >= INVENTORY_TABLE_WIDTH || y >= INVENTORY_TABLE_HEIGHT)
+    if (col >= INVENTORY_TABLE_WIDTH || row >= INVENTORY_TABLE_HEIGHT)
         return ERR_INTEGER_TOO_LARGE;
     input = strtoul(optv[4], NULL, 16);
-    return send8(file_offset + x + y*INVENTORY_TABLE_WIDTH, input);
+    return send8(file_offset + col + row*INVENTORY_TABLE_WIDTH, input);
 }
 
 int item_count(int optc, char ** optv)
