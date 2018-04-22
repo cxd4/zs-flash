@@ -366,21 +366,19 @@ int player_name(int optc, char ** optv)
 
 int life_energy_points(int optc, char ** optv)
 {
+    Boolean now_life;
     signed long input;
-    int Boolean;
     const size_t file_offset = 0x000034;
 
     if (optc < 2)
         return ERR_INTEGER_COUNT_INSUFFICIENT;
-    input = strtol(optv[1], NULL, 0); /* Boolean ? now_life : max_life */
-    Boolean = (input != 0) ? 1 : 0;
+    now_life = strtobool(optv[1]);
     if (optc < 3)
         return show16(
-            Boolean ? "now_life" : "max_life",
-            file_offset + 2*Boolean
+            now_life ? "now_life" : "max_life", file_offset + 2*now_life
         );
     input = strtol(optv[2], NULL, 0);
-    return sendx16(file_offset + 2*Boolean, input);
+    return sendx16(file_offset + 2*now_life, input);
 }
 
 int magic_points(int optc, char ** optv)
