@@ -52,7 +52,7 @@ static const heart_piece heart_pieces[] = {
     { 8*0xF00 + 5, 48, "Dog Race 500" },
 
     { 8*0x894 + 6, 23, "Southern Swamp" },
-    { 8*0xE7A + 0, 27, "Tingle's Pictograph" }, /* probably wrong... */
+    { 8*0xF4F + 2, 27, "Tingle's Pictograph" },
     { 8*0x5BC + 6, 28, "Deku Palace Garden" },
     { 8*0x8B2 + 2, 29, "Woodfall" },
     { 8*0xF33 + 4, 31, "Swamp Shooting Gallery" },
@@ -61,20 +61,20 @@ static const heart_piece heart_pieces[] = {
     { 8*0x974 + 6, 24, "Goron Village" },
     { 8*0xAFE + 0, 34, "Snowhead's Scarecrow" },
     { 8*0xB37 + 7, 32, "Goron Pond in Spring" },
-    { 8*0xF1B + 7, 33, "Don Gero's Frog Choir" }, /* needs double-checking */
+    { 8*0xF1B + 7, 33, "Don Gero's Frog Choir" },
 
     { 8*0x958 + 6, 25, "Zora Hall" },
     { 8*0xF1F + 5, 35, "Zora Jam Session" },
     { 8*0x72B + 7, 36, "Like Like" },
     { 8*0x4DE + 4, 37, "Pirates' Fortress" },
-    { 8*0xE7A + 1, 38, "Pinnacle Rock" }, /* needs double-checking */
+    { 8*0xF18 + 0, 38, "Pinnacle Rock" },
     { 8*0x568 + 7, 39, "Oceanside Spider House" },
     { 8*0xF30 + 1, 40, "Marine Research Lab" },
-    { 8*0xEF9 + 6, 42, "Beaver Race" }, /* needs double-checking */
+    { 8*0xF11 + 0, 42, "Beaver Race" },
     { 8*0x70F + 5, 43, "Great Bay Scarecrow" },
     { 8*0xF4A + 4, 41, "Great Bay Jumping Game" },
 
-    { 8*0x314 + 6, 26, "Ikana Canyon" }, /* Huh...wrong address? */
+    { 8*0x31C + 6, 26, "Ikana Canyon" },
     { 8*0xF2E + 6, 45, "Spirit House" },
     { 8*0x258 + 7, 44, "Ikana Graveyard" },
     { 8*0x436 + 2, 46, "Ikana Castle Columns" },
