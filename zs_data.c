@@ -763,6 +763,99 @@ int picture_frame_buffer(int optc, char ** optv)
     free(pixel_array);
     return ERR_NONE;
 }
+
+int swap_fmt(int optc, char ** optv)
+{
+    unsigned int section_ID;
+    u8 * section, item;
+    register size_t i, location;
+    static const char newold[2][4] = {"new", "old"};
+
+    if (optc > 1)
+        return ERR_INTEGER_TOO_LARGE;
+        
+    printf("Converting item register to %s format.\n", newold[!is_old_JAP]);
+
+    section_ID = (unsigned int)(file - flash_RAM) / FILE_SIZE;
+    section = &flash_RAM[FILE_SIZE * (section_ID % NUMBER_OF_DATA_FILES)];
+
+    /* convert "item_register" (inventory) */
+    location = 0x0070;
+    for (i = 0; i < ITEM_REGISTER_SIZE; i++)
+    {
+        item = read8(section + location + i);
+        item = swap_item_format(item);
+        write8(section + location + i, item);
+    }
+    
+    /* convert "register_item" (button assignments) */
+    location = 0x004C;
+    for (i = 0; i < REGISTER_ITEM_SIZE; i++)
+    {
+        item = read8(section + location + i);
+        item = swap_item_format(item);
+        write8(section + location + i, item);
+    }
+
+    return ERR_NONE;
+}
+
+u8 swap_item_format(u8 item)
+{
+    if (is_old_JAP)
+    {
+        if (item >= 0x26 && item <= 0x29)
+            item -= 2;
+        else if (item >= 0x30 && item <= 0x34)
+            item -= 8;
+        else if (item >= 0x3A && item <= 0x3B)
+            item -= 13;
+        else if (item >= 0x44 && item <= 0x45)
+            item -= 21;
+        else if (item >= 0x4D && item <= 0x68)
+            item -= 28;
+        else if (item >= 0x6C && item <= 0x71)
+            item -= 31;
+        else if (item >= 0x73 && item < 0xFF)
+            item -= 32;
+        else if (item < 0x26)
+        {
+            /* do nothing */
+        }
+        else if (item != 0xFF)
+            printf("Warning! item 0x%02X cannot be converted.\n", item);
+    }
+    else
+    {
+        if (item >= 0x24 && item <= 0x27)
+            item += 2;
+        else if (item >= 0x28 && item <= 0x2C)
+            item += 8;
+        else if (item >= 0x2D && item <= 0x2E)
+            item += 13;
+        else if (item >= 0x2F && item <= 0x30)
+            item += 21;
+        else if (item >= 0x31 && item <= 0x4C)
+            item += 28;
+        else if (item >= 0x4D && item <= 0x52)
+            item += 31;
+        else if (item >= 0x53 && item < 0xDF) /* 0xDF=0xFF-32 */
+            item += 32;
+        else if (item < 0x24)
+        {
+            /* do nothing */
+        }
+        else if (item >= 0xDF)
+        {
+            /* printf("Warning! item 0x%02X is too large to convert.\n", item); */
+        }
+        else
+            printf("Warning! item 0x%02X is undefined and cannot be converted.\n", item);
+    }
+    
+    return item;
+}
+
 int set_fmt(int optc, char ** optv)
 {
     static const char newold[2][4] = {"new", "old"};
@@ -1175,6 +1268,7 @@ void init_options(void)
     opt_table['M'] = magic_points; /* current M.P. out of max M.P. */
     opt_table['N'] = player_name; /* Link's name and the file select name */
     opt_table['R'] = long_sword_hp; /* Razor Sword durability */
+    opt_table['S'] = swap_fmt; /* swap item register to opposite save format */
     opt_table['U'] = non_equip_register; /* permanent equipment upgrades */
     opt_table['W'] = week_event_reg; /* 800 bits of tracking what Link did */
     opt_table['Z'] = change_zelda_time; /* (time_rate + 3) time acceleration */

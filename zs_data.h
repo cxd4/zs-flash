@@ -26,6 +26,9 @@
 #define BMP_SIZE                        (14 + 12 + (BMP_PIXELS))
 #define CFB_SIZE                        ((CFB_PIXELS) * (CFB_BITS_PER_PIXEL)/8)
 
+#define ITEM_REGISTER_SIZE              48
+#define REGISTER_ITEM_SIZE              16
+
 typedef int(*p_opt)(int optc, char ** argv);
 extern p_opt * opt_table;
 
@@ -63,6 +66,9 @@ extern int orange_fairy(int optc, char ** optv);
 extern int week_event_reg(int optc, char ** optv);
 extern int numbers_table(int optc, char ** optv);
 extern int picture_frame_buffer(int optc, char ** optv);
+
+extern int swap_fmt(int optc, char ** optv);
+extern u8 swap_item_format(u8 item);
 
 extern void init_options(void);
 extern int reserved(int optc, char ** optv);
